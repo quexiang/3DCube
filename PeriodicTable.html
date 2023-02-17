@@ -1,0 +1,1835 @@
+<html>
+<head>
+<style type="text/css">
+	body {
+		font-family: Monospace;
+		background-color: #f0f0f0;
+		margin: 0px;
+		overflow: hidden;
+	}
+	table.periodicTable td {
+		margin: 10px;
+
+	}
+
+	.periodicTable td.selected {
+		background-color: green;
+	}
+	.periodicTable td.unselected {
+		font-weight: normal;
+		color: #A9A9A9;
+	}
+	.periodicTable td.present {
+
+		color: #000000;
+
+	}
+	.periodicTable td.notpresent {
+
+		color: #A9A9A9;
+	}	
+	.txtAxis:focus {
+		background-color:#3498DB;
+	}
+	.navigationRight {
+		border-left: thick solid #ff0000;
+		float: right;
+	}
+ </style>
+	<script type="text/javascript" src="../static/js/3DCube/jquery-1.9.1.js"></script>
+	<script type="text/javascript" src="../static/js/3DCube/papaparse.js"></script>
+	<script src="../static/js/3DCube/alasql.min.js"></script>
+</head>
+<body>
+	<center>
+		<br/></br>
+		<a href="https://github.com/ChuBL/3DHeatmapDataPreprosses">How to use this demo</a>
+		<br/></br>
+		<label style="  display: blockmargin-top: 1em;  margin-bottom: 1em; margin-left: 0;  margin-right: 0;  font-weight: bold;"> <font size="4em">Load Dataset:</font>
+		    <select id= "select-datasets" name="selectList_ds">
+				 <option value= "-1" selected>Select an Option</option>
+<!--				 <option value = "1">72x72x72</option>-->
+<!--				 <option value = "2">30x30x30</option>-->
+<!--				 <option value = "3">30x30x30 Normalized</option>-->
+				 <option value = "4">30_elements</option>
+				 <option value = "5">30_sigelements</option>
+				 <option value = "6">normalized_30_elements</option>
+				 <option value = "7">normalized_30_sigelements</option>
+				 <option value = "8">72_elements</option>
+				 <option value = "9">72_sigelements</option>
+				 <option value = "10">normalized_72_elements</option>
+				 <option value = "11">normalized_72_sigelements</option>
+			</select>
+		</label>
+
+		<br/></br>
+		<h3 id = "random_elm" style="color:grey;">Select Random Elements</h3>
+		<form name="periodicTable">
+		<table id = "periodicTable" class="periodicTable" cellspacing=2 cellpadding=0 width=500>
+			<tr>
+				<td align=center bgcolor="#FFE4C4">H</td>
+				<td colspan="16"></td>
+				<td align=center bgcolor="#FFE4C4">He</td>
+			</tr>
+			<tr>
+				<td align=center bgcolor="#5F9EA0">Li</td>
+				<td align=center bgcolor="#5F9EA0">Be</td>
+				<td colspan="10"></td>
+				<td align=center bgcolor="#FF4500">B</td>
+				<td align=center bgcolor="#FFE4C4">C</td>
+				<td align=center bgcolor="#FFE4C4">N</td>
+				<td align=center bgcolor="#FFE4C4">O</td>
+				<td align=center bgcolor="#FFE4C4">F</td>
+				<td align=center bgcolor="#FFE4C4">Ne</td>
+			</tr>
+			<tr>
+				<td align=center bgcolor="#5F9EA0">Na</td>
+				<td align=center bgcolor="#5F9EA0">Mg</td>
+				<td colspan="10"></td>
+				<td align=center bgcolor="#5F9EA0">Al</td>
+				<td align=center bgcolor="#FF4500">Si</td>
+				<td align=center bgcolor="#FFE4C4">P</td>
+				<td align=center bgcolor="#FFE4C4">S</td>
+				<td align=center bgcolor="#FFE4C4">Cl</td>
+				<td align=center bgcolor="#FFE4C4">Ar</td>
+			</tr>
+			<tr>
+				<td align=center bgcolor="#5F9EA0">K</td>
+				<td align=center bgcolor="#5F9EA0">Ca</td>
+				<td align=center bgcolor="#5F9EA0">Sc</td>
+				<td align=center bgcolor="#5F9EA0">Ti</td>
+				<td align=center bgcolor="#5F9EA0">V</td>
+				<td align=center bgcolor="#5F9EA0">Cr</td>
+				<td align=center bgcolor="#5F9EA0">Mn</td>
+				<td align=center bgcolor="#5F9EA0">Fe</td>
+				<td align=center bgcolor="#5F9EA0">Co</td>
+				<td align=center bgcolor="#5F9EA0">Ni</td>
+				<td align=center bgcolor="#5F9EA0">Cu</td>
+				<td align=center bgcolor="#5F9EA0">Zn</td>
+				<td align=center bgcolor="#5F9EA0">Ga</td>
+				<td align=center bgcolor="#FF4500">Ge</td>
+				<td align=center bgcolor="#FF4500">As</td>
+				<td align=center bgcolor="#FFE4C4">Se</td>
+				<td align=center bgcolor="#FFE4C4">Br</td>
+				<td align=center bgcolor="#FFE4C4">Kr</td>
+			</tr>
+			<tr>
+				<td align=center bgcolor="#5F9EA0">Rb</td>
+				<td align=center bgcolor="#5F9EA0">Sr</td>
+				<td align=center bgcolor="#5F9EA0">Y</td>
+				<td align=center bgcolor="#5F9EA0">Zr</td>
+				<td align=center bgcolor="#5F9EA0">Nb</td>
+				<td align=center bgcolor="#5F9EA0">Mo</td>
+				<td align=center bgcolor="#5F9EA0">Tc</td>
+				<td align=center bgcolor="#5F9EA0">Ru</td>
+				<td align=center bgcolor="#5F9EA0">Rh</td>
+				<td align=center bgcolor="#5F9EA0">Pd</td>
+				<td align=center bgcolor="#5F9EA0">Ag</td>
+				<td align=center bgcolor="#5F9EA0">Cd</td>
+				<td align=center bgcolor="#5F9EA0">In</td>
+				<td align=center bgcolor="#5F9EA0">Sn</td>
+				<td align=center bgcolor="#FF4500">Sb</td>
+				<td align=center bgcolor="#FF4500">Te</td>
+				<td align=center bgcolor="#FFE4C4">I</td>
+				<td align=center bgcolor="#FFE4C4">Xe</td>
+			</tr>
+			<tr>
+				<td align=center bgcolor="#5F9EA0">Cs</td>
+				<td align=center bgcolor="#5F9EA0">Ba</td>
+				<td align=center bgcolor="#5F9EA0">REE</td>
+				<td align=center bgcolor="#5F9EA0">Hf</td>
+				<td align=center bgcolor="#5F9EA0">Ta</td>
+				<td align=center bgcolor="#5F9EA0">W</td>
+				<td align=center bgcolor="#5F9EA0">Re</td>
+				<td align=center bgcolor="#5F9EA0">Os</td>
+				<td align=center bgcolor="#5F9EA0">Ir</td>
+				<td align=center bgcolor="#5F9EA0">Pt</td>
+				<td align=center bgcolor="#5F9EA0">Au</td>
+				<td align=center bgcolor="#5F9EA0">Hg</td>
+				<td align=center bgcolor="#5F9EA0">Tl</td>
+				<td align=center bgcolor="#5F9EA0">Pb</td>
+				<td align=center bgcolor="#5F9EA0">Bi</td>
+				<td align=center bgcolor="#5F9EA0">Po</td>
+				<td align=center bgcolor="#FF4500">At</td>
+				<td align=center bgcolor="#FFE4C4">Rn</td>
+			</tr>
+			<tr>
+				<td align=center bgcolor="#5F9EA0">Fr</td>
+				<td align=center bgcolor="#5F9EA0">Ra</td>
+				<td align=center bgcolor="#5F9EA0">**</td>
+				<td align=center bgcolor="#5F9EA0"> Rf </td>
+				<td align=center bgcolor="#5F9EA0"> Db </td>
+				<td align=center bgcolor="#5F9EA0"> Sg </td>
+				<td align=center bgcolor="#5F9EA0"> Bh </td>
+				<td align=center bgcolor="#5F9EA0"> Hs </td>
+				<td align=center bgcolor="#5F9EA0"> Mt </td>
+				<td align=center bgcolor="#5F9EA0"> Ds </td>
+				<td align=center bgcolor="#5F9EA0"> Rg </td>
+				<td align=center bgcolor="#5F9EA0"> Cn </td>
+				<td align=center bgcolor="#5F9EA0"> Uut </td>
+				<td align=center bgcolor="#5F9EA0"> Uuq </td>
+				<td align=center bgcolor="#5F9EA0"> UuP </td>
+				<td align=center bgcolor="#5F9EA0"> Uuh </td>
+				<td align=center bgcolor="#5F9EA0"> Uus </td>
+				<td align=center bgcolor="#5F9EA0"> Uuo </td>
+			</tr>
+
+			<tr>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			</tr>
+
+			<tr>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td align=center bgcolor="#5F9EA0"> La </td>
+			<td align=center bgcolor="#5F9EA0"> Ce </td>
+			<td align=center bgcolor="#5F9EA0"> Pr </td>
+			<td align=center bgcolor="#5F9EA0"> Nd </td>
+			<td align=center bgcolor="#5F9EA0"> Pm </td>
+			<td align=center bgcolor="#5F9EA0"> Sm </td>
+			<td align=center bgcolor="#5F9EA0"> Eu </td>
+			<td align=center bgcolor="#5F9EA0"> Gd </td>
+			<td align=center bgcolor="#5F9EA0"> Tb </td>
+			<td align=center bgcolor="#5F9EA0"> Dy </td>
+			<td align=center bgcolor="#5F9EA0"> Ho </td>
+			<td align=center bgcolor="#5F9EA0"> Er </td>
+			<td align=center bgcolor="#5F9EA0"> Tm </td>
+			<td align=center bgcolor="#5F9EA0"> Yb </td>
+			<td align=center bgcolor="#5F9EA0"> Lu </td>
+			</tr>
+
+
+			<tr>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			<td align=center bgcolor="#5F9EA0"> Ac </td>
+			<td align=center bgcolor="#5F9EA0"> Th </td>
+			<td align=center bgcolor="#5F9EA0"> Pa </td>
+			<td align=center bgcolor="#5F9EA0"> U </td>
+			<td align=center bgcolor="#5F9EA0"> Np </td>
+			<td align=center bgcolor="#5F9EA0"> Pu </td>
+			<td align=center bgcolor="#5F9EA0"> Am </td>
+			<td align=center bgcolor="#5F9EA0"> Cm </td>
+			<td align=center bgcolor="#5F9EA0"> Bk </td>
+			<td align=center bgcolor="#5F9EA0"> Cf </td>
+			<td align=center bgcolor="#5F9EA0"> Es </td>
+			<td align=center bgcolor="#5F9EA0"> Fm </td>
+			<td align=center bgcolor="#5F9EA0"> Md </td>
+			<td align=center bgcolor="#5F9EA0"> No </td>
+			<td align=center bgcolor="#5F9EA0"> Lr </td>
+			</tr>			
+		</table>
+		</form>
+		<h3 id = "elm_comb" style="color:grey;">Select Element Combinations by Mineral Classes</h3>
+		
+		<form name="table">
+			     <select id="select-model" name="selectList" disabled>
+				 <option value="-1" selected>Select an Option</option>
+				 <option value = "1">Native Elements</option>
+				 <option value = "2">Sulfides</option>
+				 <option value = "3">Oxides</option>
+				 <option value = "4">Halides</option>
+				 <option value = "5">Carbonates</option>
+				 <option value = "6">Sulphates</option>
+				 <option value = "7">Phosphates</option>
+				 <option value = "8">Nesosilicates or Orthosilicates</option>
+				​<option value = "9">Sorosilicates or Disilicates</option>
+				 <option value = "10">Cyclosilicates</option>
+				 <option value = "11">Inosilicates</option>
+				 <option value = "12">Phyllosilicates</option>
+				 <option value = "13">Tectosilicat</option>
+      			 </select>
+			     <table id ="axisSelect" class="axisSelect" width="500">
+					<tr>
+						<td align="center" width="33%">X-Axis</td>
+						<td align="center" width="33%">Y-Axis</td>
+						<td align="center" width="33%">Z-Axis</td>
+					</tr>
+					<tr>
+						<td align="center" width="33%"><input type="text" id="txtXaxis" class="txtAxis" value="" size="20"  readonly autofocus></td>
+						<td align="center" width="33%"><input type="text" id="txtYaxis" class="txtAxis" value="" size="20" readonly></td>
+						<td align="center" width="33%"><input type="text" id="txtZaxis" class="txtAxis" value="" size="20" readonly></td>
+					</tr>
+				 </table>
+				 <input type="button" value="Download Subset Data" id="btnDownload" onclick="downloadCSV()" disabled>
+				 <input type="button" value="Visualize Selected Elements" id="btnVisualizeSel" disabled>
+				 <input type="button" value="Visualize All Elements" id="btnVisualizeAll" disabled>
+		</form>
+		<input type="button" value="Clear All" id ="btnClearAll" onclick="clearSelection()"><br/>
+	</center>
+	<div class="navigationRight">
+	</div>
+
+<script>
+	//define variables
+	var headers = ""; //holds the headers from the uploaded csv file
+	var dataset=[];
+	var subsetData= new Array();
+	var csvSubset = ""; //holds the subset of data based on user selection of elements
+	//var csvString = "";
+	var length = 0; //length of the header of the csv file
+	var xaxis = ""; //list of elements selected on x-axis
+	var yaxis = ""; //list of elements selected on y-axis
+	var zaxis = ""; //list of elements selected on z-axis
+	var xAxisCount = 0; //count of elements selected on x-axis
+	var yAxisCount = 0; //count of elements selected on y-axis
+	var zAxisCount = 0; //count of elements selected on z-axis
+	var filename = ""; //file name of the csv
+	var redirectWindow; //to redirect to visualization page
+	var table = $("#periodicTable"); 
+	var selectedAxis = "x";
+	var eleByAtomicNo = "H,He,Li,Be,B,C,N,O,F,Ne,Na,Mg,Al,Si,P,S,Cl,Ar,K,Ca,Sc,Ti,V,Cr,Mn,Fe,Co,Ni,Cu,Zn,Ga,Ge,As,Se,Br,Kr,Rb,Sr,Y,Zr,Nb,Mo,Tc,Ru,Rh,Pd,Ag,Cd,In,Sn,Sb,Te,I,Xe,Cs,Ba,REE,La,Ce,Pr,Nd,Pm,Sm,Eu,Gd,Tb,Dy,Ho,Er,Tm,Yb,Lu,Hf,Ta,W,Re,Os,Ir,Pt,Au,Hg,Tl,Pb,Bi,Po,At,Rn,Fr,Ra,Ac,Th,Pa,U,Np,Pu,Am,Cm,Bk,Cf,Es,Fm,Md,No,Lr,Rf,Db,Sg,Bh,Hs,Mt,Ds,Rg,Cn,Nh,Fl,Mc,Lv,Ts,Og";
+
+	// function to read headers
+	function getHeaders(results){
+	document.getElementById("txtXaxis").focus();// = true;
+	console.log("getHeaders(results) called");
+	//console.log("document.getElementById(txtXaxis).clicked"+document.getElementById("txtXaxis").focus());
+		for(i=0; i<results.length; i++){
+			dataset.push(results[i]);	
+		}
+		console.log("dataset[0]:"+dataset[0]);
+		console.log("results[0]:"+results[0]);
+		length = dataset[0].split(",").length;
+		console.log("dataset[0].length:"+dataset[0].split(",").length);
+		console.log("length of the header: "+length);
+		highlightHeaders();
+		document.getElementById("btnDownload").disabled = false;
+		document.getElementById("btnVisualizeSel").disabled = false;
+		document.getElementById("btnVisualizeAll").disabled = false;
+	}
+	//highlight only the elements present in header of the csv in periodic table
+	function highlightHeaders(){
+	console.log("dataset[0] inside highlight headers:"+dataset[0]);
+	if(dataset[0] != undefined){
+		headers = dataset[0];
+		var element = headers.split(",");
+		//console.log("element:"+element);
+		//var element = headers;
+		}
+	else{
+		var element = "0";
+	}
+		console.log("headers: " + headers);
+		console.log("element.length: " + element.length);
+		table.find(".selected").removeClass("selected");
+		table.find(".present").removeClass("present");
+		table.find(".notpresent").removeClass("notpresent");
+		var flag = false;	
+		table.find("tr").each(function() { 
+			$(this).find("td").each (function() {
+				for(k=0;k<element.length;k++){
+					if(element[k].trim()==$(this).html().trim()){
+						//console.log("present element:" + $(this).html());
+						$(this).removeClass("notpresent");
+						$(this).addClass("present");
+						break;
+					}
+					
+					else{
+						//console.log("not present element:" + $(this).html());
+						//$(this).find("td").removeClass("present");
+						$(this).removeClass("present");
+						$(this).addClass("notpresent");
+						//break;
+					}
+				}
+			});
+		}); 
+		if(selectedAxis == "x"){
+		//console.log("xaxis inside the radio button change and highlight");
+			if(xaxis==""){
+				console.log("x axis is empty");
+			}else{
+				var xaxisTemp = xaxis.split(",");
+				//console.log("xaxisTemp:"+xaxisTemp);
+				table.find("tr").each(function() { 
+					$(this).find("td").each (function() {
+						for(k=0;k<xAxisCount;k++){
+						//console.log("inside for loop x axis");
+							if(xaxisTemp[k].trim()==$(this).html().trim()){
+									$(this).addClass("selected");
+							}
+						}
+					});
+				}); 			
+			}
+		}else if(selectedAxis == "y"){
+		//console.log("yaxis inside the radio button change and highlight");
+			if(yaxis==""){
+				console.log("y axis is empty");
+			}else{
+				var yaxisTemp = yaxis.split(",");
+				table.find("tr").each(function() { 
+					$(this).find("td").each (function() {
+						for(k=0;k<yAxisCount;k++){
+							if(yaxisTemp[k].trim()==$(this).html().trim()){
+									$(this).addClass("selected");
+							}
+						}
+					});
+				}); 
+			}
+		}else if(selectedAxis == "z"){
+		//console.log("zaxis inside the radio button change and highlight");
+			if(zaxis==""){
+				console.log("z axis is empty");
+			}else{
+				var zaxisTemp = zaxis.split(",");
+				table.find("tr").each(function() { 
+					$(this).find("td").each (function() {
+						for(k=0;k<zAxisCount;k++){
+							if(zaxisTemp[k].trim()==$(this).html().trim()){
+									//console.log("zaxisTemp[k]:"+zaxisTemp[k] +"and $(this).html()="+$(this).html());
+									$(this).addClass("selected");
+							}
+						}
+					});
+				}); 
+			}
+		}else{
+		console.log("else nothing");
+		}
+	}
+	
+	//function that selects the elements in periodic table
+	function selectData(){
+		table.find("td").unbind("mousedown"); //this is absolute necessary otherwise the mouse click after clearing will not work
+		console.log("selectData() called");
+		var isMouseDown = false;
+		//table.find(".selected").removeClass("selected"); // deselect everything
+		table.find("td").mousedown(function (e) {
+		//$("#periodicTable td").click(function (e) {
+			isMouseDown = true;
+			
+			var cell = $(this);
+			//console.log("cell.is(\".selected\"):" + cell.is(".selected"));
+			//table.find(".selected").removeClass("selected"); // deselect everything
+			if(cell.is(".selected")){
+				//console.log("already selected cell:");
+				cell.removeClass("selected");
+				createAxes(cell.html().trim());
+			}else if(cell.is(".present")){
+				cell.addClass("selected");
+				//console.log("present in header");
+				//console.log($(this).html());
+				createAxes(cell.html().trim());
+			}
+			else{
+				//console.log("not present in header");
+			}		
+			return false; // prevent text selection
+		})
+		
+		.mouseover(function () {
+			if (!isMouseDown) return;
+			table.find(".selected").removeClass("selected");
+			//selectTo($(this));
+		})
+		.bind("selectstart", function () {
+			return false;
+		});
+
+		$(document).mouseup(function () {
+			isMouseDown = false;
+		});
+		
+		
+	}
+	
+	//create x,y and z axes based on the element selected. It also sort the elements based on their atomic number. Here reference taken from header in csv
+	function createAxes(cell){
+		//var isMouseDown = false;
+		if(selectedAxis == "x"){
+		//console.log("inside if of xaxis");
+			if(xaxis==""){
+				xaxis +=  cell;
+			}else{
+				//console.log("before:"+xaxis);
+				xaxis = checkAlreadySelected(cell,xaxis);
+				//console.log("after:"+xaxis)
+			}
+			document.getElementById("txtXaxis").value = xaxis;
+			xAxisCount = xaxis.split(",").length;
+		}else if(selectedAxis == "y"){
+		//console.log("inside if of yaxis");
+			if(yaxis==""){
+				yaxis +=  cell;
+			}else{
+				yaxis = checkAlreadySelected(cell,yaxis);
+			}
+			document.getElementById("txtYaxis").value = yaxis;
+			yAxisCount = yaxis.split(",").length;
+		}
+		else if(selectedAxis == "z"){
+		//console.log("inside if of zaxis");
+			if(zaxis==""){
+				zaxis +=  cell;
+			}else{
+				zaxis = checkAlreadySelected(cell,zaxis);
+			}
+			document.getElementById("txtZaxis").value = zaxis;
+			zAxisCount = zaxis.split(",").length;
+		}
+		else{
+		console.log("esle nothing");
+		}
+		/*
+		console.log("xaxis : "+xaxis);
+		console.log("xaxis.length : "+xAxisCount);
+		console.log("yaxis : "+yaxis);
+		console.log("yaxis.length : "+yAxisCount);
+		console.log("zaxis : "+zaxis);
+		console.log("zaxis.length : "+zAxisCount);
+		*/
+	//	createSubset();
+	}
+	$("input[name='axis']").change(function(){
+		highlightHeaders();
+		/*
+		console.log("radio button changed");
+		console.log("xaxis : "+xaxis);
+		console.log("xaxis.length : "+xAxisCount);
+		console.log("yaxis : "+yaxis);
+		console.log("yaxis.length : "+yAxisCount);
+		console.log("zaxis : "+zaxis);
+		console.log("zaxis.length : "+zAxisCount);
+		*/
+		
+		
+		
+	});
+	
+	//check if the element is already selected, if yes then deselect
+	function checkAlreadySelected(element,axis){
+		//console.log("before axis:"+axis);
+		var axisTemp = [];
+		var flag = false;
+		axisTemp = axis.split(",");
+		for (i=0;i<axisTemp.length;i++){
+			if(element == axisTemp[i]){
+				//var axisIndex = axisTemp.indexOf(element);
+				flag = true;
+				break;
+				
+			}
+		}
+			
+		if(flag){
+		//console.log("remove:"+element);
+			axisTemp.splice(i,1);
+			axis = axisTemp.join(",");
+		}
+		else {
+			//console.log("push:"+element);
+			axis +=","+element;
+		}
+		//console.log("after axis:" + axis);
+		return axis;
+	}
+	
+	//create subset based on elements selected by user
+	//use of alaSql.js
+	//outputs data in alaData
+	function createSubset() {
+
+		var csvString = dataset.join("\n");
+		//console.log("csvString:"+ csvString);
+		
+		var config = {
+			header:true,
+			dynamicTyping: true
+		};
+		var jsonObject = Papa.parse(csvString,config).data;
+
+		var xaxisTemp = "" ;
+		var yaxisTemp = "" ;
+		var zaxisTemp = "" ;
+		//console.log("headers for sorting:"+headers);
+		//console.log("x axis elements for sorting:"+xaxis);
+		//sort the x axis elements as per the headers and add [] to avoid the fields match the sql keywords
+		console.log("sorting eleByAtomicNo.length:"+eleByAtomicNo.split(",").length);
+		console.log("xa axis.length:"+xaxis.split(",").length);
+		for(i=0; i<eleByAtomicNo.split(",").length ; i++){
+			for(j=0; j<xaxis.split(",").length ; j++){
+				if(eleByAtomicNo.split(",")[i].trim() == xaxis.split(",")[j].trim()){
+					//console.log("eleByAtomicNo[i]:"+eleByAtomicNo.split(",")[i]);
+					xaxisTemp += "[" + eleByAtomicNo.split(",")[i].trim() + "],";
+					//console.log("xaxisTemp:"+xaxisTemp);
+				}
+			}
+//			console.log("xaxisTemp:"+xaxisTemp);
+		}
+		for(i=0; i<yaxis.split(",").length ; i++){
+			//console.log("yaxisTemp:"+yaxis.split(",")[i]);
+			yaxisTemp += "\'" + yaxis.split(",")[i].trim() + "\',";
+			//console.log("yaxisTemp:"+yaxisTemp);
+		}
+		for(i=0; i<zaxis.split(",").length ; i++){
+			//console.log("zaxisTemp:"+zaxis.split(",")[i]);
+			zaxisTemp += "\'" + zaxis.split(",")[i].trim() + "\',";
+			//console.log("zaxisTemp:"+zaxisTemp);
+		}
+		var query = "SELECT DISTINCT trim(zaxis),trim(yaxis)," + xaxisTemp.substring(0, xaxisTemp.length - 1) + 
+					" FROM ? WHERE trim(zaxis) IN(" + zaxisTemp.substring(0, zaxisTemp.length - 1) + 
+					") AND trim(yaxis) IN(" + yaxisTemp.substring(0, yaxisTemp.length - 1) + ")" +
+					"order by case" +
+					" when trim(zaxis) = 'H' then  1" + 
+					" when trim(zaxis) = 'He' then  2" + 
+					" when trim(zaxis) = 'Li' then  3" + 
+					" when trim(zaxis) = 'Be' then  4" + 
+					" when trim(zaxis) = 'B' then  5" + 
+					" when trim(zaxis) = 'C' then  6" + 
+					" when trim(zaxis) = 'N' then  7" + 
+					" when trim(zaxis) = 'O' then  8" + 
+					" when trim(zaxis) = 'F' then  9" + 
+					" when trim(zaxis) = 'Ne' then  10" + 
+					" when trim(zaxis) = 'Na' then  11" + 
+					" when trim(zaxis) = 'Mg' then  12" + 
+					" when trim(zaxis) = 'Al' then  13" + 
+					" when trim(zaxis) = 'Si' then  14" + 
+					" when trim(zaxis) = 'P' then  15" + 
+					" when trim(zaxis) = 'S' then  16" + 
+					" when trim(zaxis) = 'Cl' then  17" + 
+					" when trim(zaxis) = 'Ar' then  18" + 
+					" when trim(zaxis) = 'K' then  19" + 
+					" when trim(zaxis) = 'Ca' then  20" + 
+					" when trim(zaxis) = 'Sc' then  21" + 
+					" when trim(zaxis) = 'Ti' then  22" + 
+					" when trim(zaxis) = 'V' then  23" + 
+					" when trim(zaxis) = 'Cr' then  24" + 
+					" when trim(zaxis) = 'Mn' then  25" + 
+					" when trim(zaxis) = 'Fe' then  26" + 
+					" when trim(zaxis) = 'Co' then  27" + 
+					" when trim(zaxis) = 'Ni' then  28" + 
+					" when trim(zaxis) = 'Cu' then  29" + 
+					" when trim(zaxis) = 'Zn' then  30" + 
+					" when trim(zaxis) = 'Ga' then  31" + 
+					" when trim(zaxis) = 'Ge' then  32" + 
+					" when trim(zaxis) = 'As' then  33" + 
+					" when trim(zaxis) = 'Se' then  34" + 
+					" when trim(zaxis) = 'Br' then  35" + 
+					" when trim(zaxis) = 'Kr' then  36" + 
+					" when trim(zaxis) = 'Rb' then  37" + 
+					" when trim(zaxis) = 'Sr' then  38" + 
+					" when trim(zaxis) = 'Y' then  39" + 
+					" when trim(zaxis) = 'Zr' then  40" + 
+					" when trim(zaxis) = 'Nb' then  41" + 
+					" when trim(zaxis) = 'Mo' then  42" + 
+					" when trim(zaxis) = 'Tc' then  43" + 
+					" when trim(zaxis) = 'Ru' then  44" + 
+					" when trim(zaxis) = 'Rh' then  45" + 
+					" when trim(zaxis) = 'Pd' then  46" + 
+					" when trim(zaxis) = 'Ag' then  47" + 
+					" when trim(zaxis) = 'Cd' then  48" + 
+					" when trim(zaxis) = 'In' then  49" + 
+					" when trim(zaxis) = 'Sn' then  50" + 
+					" when trim(zaxis) = 'Sb' then  51" + 
+					" when trim(zaxis) = 'Te' then  52" + 
+					" when trim(zaxis) = 'I' then  53" + 
+					" when trim(zaxis) = 'Xe' then  54" + 
+					" when trim(zaxis) = 'Cs' then  55" + 
+					" when trim(zaxis) = 'Ba' then  56" + 
+					" when trim(zaxis) = 'REE' then  57" + 
+					" when trim(zaxis) = 'La' then  58" + 
+					" when trim(zaxis) = 'Ce' then  59" + 
+					" when trim(zaxis) = 'Pr' then  60" + 
+					" when trim(zaxis) = 'Nd' then  61" + 
+					" when trim(zaxis) = 'Pm' then  62" + 
+					" when trim(zaxis) = 'Sm' then  63" + 
+					" when trim(zaxis) = 'Eu' then  64" + 
+					" when trim(zaxis) = 'Gd' then  65" + 
+					" when trim(zaxis) = 'Tb' then  66" + 
+					" when trim(zaxis) = 'Dy' then  67" + 
+					" when trim(zaxis) = 'Ho' then  68" + 
+					" when trim(zaxis) = 'Er' then  69" + 
+					" when trim(zaxis) = 'Tm' then  70" + 
+					" when trim(zaxis) = 'Yb' then  71" + 
+					" when trim(zaxis) = 'Lu' then  72" + 
+					" when trim(zaxis) = 'Hf' then  73" + 
+					" when trim(zaxis) = 'Ta' then  74" + 
+					" when trim(zaxis) = 'W' then  75" + 
+					" when trim(zaxis) = 'Re' then  76" + 
+					" when trim(zaxis) = 'Os' then  77" + 
+					" when trim(zaxis) = 'Ir' then  78" + 
+					" when trim(zaxis) = 'Pt' then  79" + 
+					" when trim(zaxis) = 'Au' then  80" + 
+					" when trim(zaxis) = 'Hg' then  81" + 
+					" when trim(zaxis) = 'Tl' then  82" + 
+					" when trim(zaxis) = 'Pb' then  83" + 
+					" when trim(zaxis) = 'Bi' then  84" + 
+					" when trim(zaxis) = 'Po' then  85" + 
+					" when trim(zaxis) = 'At' then  86" + 
+					" when trim(zaxis) = 'Rn' then  87" + 
+					" when trim(zaxis) = 'Fr' then  88" + 
+					" when trim(zaxis) = 'Ra' then  89" + 
+					" when trim(zaxis) = 'Ac' then  90" + 
+					" when trim(zaxis) = 'Th' then  91" + 
+					" when trim(zaxis) = 'Pa' then  92" + 
+					" when trim(zaxis) = 'U' then  93" + 
+					" when trim(zaxis) = 'Np' then  94" + 
+					" when trim(zaxis) = 'Pu' then  95" + 
+					" when trim(zaxis) = 'Am' then  96" + 
+					" when trim(zaxis) = 'Cm' then  97" + 
+					" when trim(zaxis) = 'Bk' then  98" + 
+					" when trim(zaxis) = 'Cf' then  99" + 
+					" when trim(zaxis) = 'Es' then  100" + 
+					" when trim(zaxis) = 'Fm' then  101" + 
+					" when trim(zaxis) = 'Md' then  102" + 
+					" when trim(zaxis) = 'No' then  103" + 
+					" when trim(zaxis) = 'Lr' then  104" + 
+					" when trim(zaxis) = 'Rf' then  105" + 
+					" when trim(zaxis) = 'Db' then  106" + 
+					" when trim(zaxis) = 'Sg' then  107" + 
+					" when trim(zaxis) = 'Bh' then  108" + 
+					" when trim(zaxis) = 'Hs' then  109" + 
+					" when trim(zaxis) = 'Mt' then  110" + 
+					" when trim(zaxis) = 'Ds' then  111" + 
+					" when trim(zaxis) = 'Rg' then  112" + 
+					" when trim(zaxis) = 'Cn' then  113" + 
+					" when trim(zaxis) = 'Nh' then  114" + 
+					" when trim(zaxis) = 'Fl' then  115" + 
+					" when trim(zaxis) = 'Mc' then  116" + 
+					" when trim(zaxis) = 'Lv' then  117" + 
+					" when trim(zaxis) = 'Ts' then  118" + 
+					" when trim(zaxis) = 'Og' then  119" + 
+					" else 200 end,"+
+					" case "+
+					" when trim(yaxis) = 'H' then  1" + 
+					" when trim(yaxis) = 'He' then  2" + 
+					" when trim(yaxis) = 'Li' then  3" + 
+					" when trim(yaxis) = 'Be' then  4" + 
+					" when trim(yaxis) = 'B' then  5" + 
+					" when trim(yaxis) = 'C' then  6" + 
+					" when trim(yaxis) = 'N' then  7" + 
+					" when trim(yaxis) = 'O' then  8" + 
+					" when trim(yaxis) = 'F' then  9" + 
+					" when trim(yaxis) = 'Ne' then  10" + 
+					" when trim(yaxis) = 'Na' then  11" + 
+					" when trim(yaxis) = 'Mg' then  12" + 
+					" when trim(yaxis) = 'Al' then  13" + 
+					" when trim(yaxis) = 'Si' then  14" + 
+					" when trim(yaxis) = 'P' then  15" + 
+					" when trim(yaxis) = 'S' then  16" + 
+					" when trim(yaxis) = 'Cl' then  17" + 
+					" when trim(yaxis) = 'Ar' then  18" + 
+					" when trim(yaxis) = 'K' then  19" + 
+					" when trim(yaxis) = 'Ca' then  20" + 
+					" when trim(yaxis) = 'Sc' then  21" + 
+					" when trim(yaxis) = 'Ti' then  22" + 
+					" when trim(yaxis) = 'V' then  23" + 
+					" when trim(yaxis) = 'Cr' then  24" + 
+					" when trim(yaxis) = 'Mn' then  25" + 
+					" when trim(yaxis) = 'Fe' then  26" + 
+					" when trim(yaxis) = 'Co' then  27" + 
+					" when trim(yaxis) = 'Ni' then  28" + 
+					" when trim(yaxis) = 'Cu' then  29" + 
+					" when trim(yaxis) = 'Zn' then  30" + 
+					" when trim(yaxis) = 'Ga' then  31" + 
+					" when trim(yaxis) = 'Ge' then  32" + 
+					" when trim(yaxis) = 'As' then  33" + 
+					" when trim(yaxis) = 'Se' then  34" + 
+					" when trim(yaxis) = 'Br' then  35" + 
+					" when trim(yaxis) = 'Kr' then  36" + 
+					" when trim(yaxis) = 'Rb' then  37" + 
+					" when trim(yaxis) = 'Sr' then  38" + 
+					" when trim(yaxis) = 'Y' then  39" + 
+					" when trim(yaxis) = 'Zr' then  40" + 
+					" when trim(yaxis) = 'Nb' then  41" + 
+					" when trim(yaxis) = 'Mo' then  42" + 
+					" when trim(yaxis) = 'Tc' then  43" + 
+					" when trim(yaxis) = 'Ru' then  44" + 
+					" when trim(yaxis) = 'Rh' then  45" + 
+					" when trim(yaxis) = 'Pd' then  46" + 
+					" when trim(yaxis) = 'Ag' then  47" + 
+					" when trim(yaxis) = 'Cd' then  48" + 
+					" when trim(yaxis) = 'In' then  49" + 
+					" when trim(yaxis) = 'Sn' then  50" + 
+					" when trim(yaxis) = 'Sb' then  51" + 
+					" when trim(yaxis) = 'Te' then  52" + 
+					" when trim(yaxis) = 'I' then  53" + 
+					" when trim(yaxis) = 'Xe' then  54" + 
+					" when trim(yaxis) = 'Cs' then  55" + 
+					" when trim(yaxis) = 'Ba' then  56" + 
+					" when trim(yaxis) = 'REE' then  57" + 
+					" when trim(yaxis) = 'La' then  58" + 
+					" when trim(yaxis) = 'Ce' then  59" + 
+					" when trim(yaxis) = 'Pr' then  60" + 
+					" when trim(yaxis) = 'Nd' then  61" + 
+					" when trim(yaxis) = 'Pm' then  62" + 
+					" when trim(yaxis) = 'Sm' then  63" + 
+					" when trim(yaxis) = 'Eu' then  64" + 
+					" when trim(yaxis) = 'Gd' then  65" + 
+					" when trim(yaxis) = 'Tb' then  66" + 
+					" when trim(yaxis) = 'Dy' then  67" + 
+					" when trim(yaxis) = 'Ho' then  68" + 
+					" when trim(yaxis) = 'Er' then  69" + 
+					" when trim(yaxis) = 'Tm' then  70" + 
+					" when trim(yaxis) = 'Yb' then  71" + 
+					" when trim(yaxis) = 'Lu' then  72" + 
+					" when trim(yaxis) = 'Hf' then  73" + 
+					" when trim(yaxis) = 'Ta' then  74" + 
+					" when trim(yaxis) = 'W' then  75" + 
+					" when trim(yaxis) = 'Re' then  76" + 
+					" when trim(yaxis) = 'Os' then  77" + 
+					" when trim(yaxis) = 'Ir' then  78" + 
+					" when trim(yaxis) = 'Pt' then  79" + 
+					" when trim(yaxis) = 'Au' then  80" + 
+					" when trim(yaxis) = 'Hg' then  81" + 
+					" when trim(yaxis) = 'Tl' then  82" + 
+					" when trim(yaxis) = 'Pb' then  83" + 
+					" when trim(yaxis) = 'Bi' then  84" + 
+					" when trim(yaxis) = 'Po' then  85" + 
+					" when trim(yaxis) = 'At' then  86" + 
+					" when trim(yaxis) = 'Rn' then  87" + 
+					" when trim(yaxis) = 'Fr' then  88" + 
+					" when trim(yaxis) = 'Ra' then  89" + 
+					" when trim(yaxis) = 'Ac' then  90" + 
+					" when trim(yaxis) = 'Th' then  91" + 
+					" when trim(yaxis) = 'Pa' then  92" + 
+					" when trim(yaxis) = 'U' then  93" + 
+					" when trim(yaxis) = 'Np' then  94" + 
+					" when trim(yaxis) = 'Pu' then  95" + 
+					" when trim(yaxis) = 'Am' then  96" + 
+					" when trim(yaxis) = 'Cm' then  97" + 
+					" when trim(yaxis) = 'Bk' then  98" + 
+					" when trim(yaxis) = 'Cf' then  99" + 
+					" when trim(yaxis) = 'Es' then  100" + 
+					" when trim(yaxis) = 'Fm' then  101" + 
+					" when trim(yaxis) = 'Md' then  102" + 
+					" when trim(yaxis) = 'No' then  103" + 
+					" when trim(yaxis) = 'Lr' then  104" + 
+					" when trim(yaxis) = 'Rf' then  105" + 
+					" when trim(yaxis) = 'Db' then  106" + 
+					" when trim(yaxis) = 'Sg' then  107" + 
+					" when trim(yaxis) = 'Bh' then  108" + 
+					" when trim(yaxis) = 'Hs' then  109" + 
+					" when trim(yaxis) = 'Mt' then  110" + 
+					" when trim(yaxis) = 'Ds' then  111" + 
+					" when trim(yaxis) = 'Rg' then  112" + 
+					" when trim(yaxis) = 'Cn' then  113" + 
+					" when trim(yaxis) = 'Nh' then  114" + 
+					" when trim(yaxis) = 'Fl' then  115" + 
+					" when trim(yaxis) = 'Mc' then  116" + 
+					" when trim(yaxis) = 'Lv' then  117" + 
+					" when trim(yaxis) = 'Ts' then  118" + 
+					" when trim(yaxis) = 'Og' then  119" + 
+					" else 200 end";
+		//console.log("querying by aladata: ");
+		//console.log(query);
+		var alaData = (alasql(query, [jsonObject]));
+		//console.log("alaData:"+alaData);
+		var jsonObjectsub = JSON.stringify(alaData);
+		var jsonStringsub = JSON.parse(jsonObjectsub);
+		//console.log("creating cubes of subset:"+jsonObjectsub);
+		//console.log("jsonStringsub:"+jsonStringsub);
+		createCSV(jsonStringsub);
+		//console.log("testing:"+typeof window.Storage);
+		if (typeof window.Storage === 'undefined') {
+			alert('Storage turned off...');
+		}
+		localStorage.removeItem("jsonObjectsub");
+		localStorage.removeItem("xAxisCount");
+		localStorage.removeItem("yAxisCount");
+		localStorage.removeItem("zAxisCount");
+		localStorage.setItem("jsonObjectsub", jsonObjectsub);
+		localStorage.setItem("xAxisCount", xAxisCount);
+		localStorage.setItem("yAxisCount", yAxisCount);
+		localStorage.setItem("zAxisCount", zAxisCount);
+		localStorage.removeItem("localfilename", filename);
+		localStorage.setItem("localfilename", filename);
+		localStorage.removeItem("headerlength");
+		localStorage.setItem("headerlength", length-2);
+		console.log("headerlength:"+ length-2)
+		localStorage.removeItem("isAllEle");
+		localStorage.setItem("isAllEle", 0);
+		//var obj = JSON.parse(localStorage.getItem("jsonObjectsub"));
+		//console.log("retrieved object: "+ obj);
+	}
+	
+	//create csv from the subset
+	function createCSV(str) {
+		var config = {
+			quotes:false,
+			header:true,
+			dynamicTyping: true
+		};
+		csvSubset = Papa.unparse(str,config);
+		console.log("creating subset (csvSubset):");
+		//console.log(csvSubset);
+		//jsonzone.value = csvSubset;
+		//downloadCSV(csvSubset);
+		
+	}
+
+	function downloadCSV() {
+		if(xaxis !=="" && yaxis !=="" && zaxis !==""){
+			createSubset();
+		}
+		else{
+			window.alert("Please select elements for all x, y and z axes!!!");
+		}		
+		console.log("downloading csv:");
+
+		var blob = new Blob([csvSubset]);
+		if (window.navigator.msSaveOrOpenBlob)  // IE hack; see http://msdn.microsoft.com/en-us/library/ie/hh779016.aspx
+			window.navigator.msSaveBlob(blob, "myData.csv");
+		else
+		{
+			var a = window.document.createElement("a");
+			a.href = window.URL.createObjectURL(blob, {type: "text/plain"});
+			a.download = "myData.csv";
+			document.body.appendChild(a);
+			a.click();  // IE: "Access is denied"; see: https://connect.microsoft.com/IE/feedback/details/797361/ie-10-treats-blob-url-as-cross-origin-and-denies-access
+			document.body.removeChild(a);
+		}
+	}
+
+	$('#btnVisualizeSel').click(function () {
+		//console.log("axis x = "+ xaxis);
+		if(xaxis !=="" && yaxis !=="" && zaxis !==""){
+			createSubset();
+			//console.log("redirectWindow:"+redirectWindow);
+			if(redirectWindow!=null){
+				if(!redirectWindow.closed){
+					redirectWindow.close();
+				}
+			}
+			redirectWindow = window.open('cube-matrix-any-elements-opacity-mousemove++plane++.html', 'redirectWindow');
+			//redirectWindow = window.open('/any-elements_cube', 'redirectWindow');
+			redirectWindow.location;	
+		}
+		else{
+			window.alert("Please select elements for all x, y and z axes!!! \n Or Press \"Visualize All Elements\"");
+		}
+	});
+
+	$('#btnVisualizeAll').click(function () {
+		var csvString = dataset.join("\n");
+		//console.log("csvString:"+ csvString);
+		
+		var config = {
+			header:true,
+			dynamicTyping: true
+		};
+		var jsonObject = Papa.parse(csvString,config).data;
+
+		var xaxisTemp = "" ;
+		for(i=0; i<eleByAtomicNo.split(",").length ; i++){
+			//console.log('eleByAtomicNo.split['+i+'] : '+eleByAtomicNo.split(",")[i]);
+			for(j=2; j<headers.split(",").length ; j++){
+				//console.log("headers.split["+j+"] : "+headers.split(",")[j]);
+				if(headers.split(",")[j].trim() == eleByAtomicNo.split(",")[i].trim()){
+					//console.log("eleByAtomicNo["+i+"]:"+eleByAtomicNo.split(",")[i]+" -- "+ "headers.split["+j+"]"+headers.split(",")[j]);
+					xaxisTemp += "[" + eleByAtomicNo.split(",")[i].trim() + "],";
+					break;
+					//console.log("headers.split"+[j]+":"+headers.split(",")[j]);
+				}
+			}
+			console.log("xaxisTempForAll:"+xaxisTemp);
+		}
+		//console.log("xaxisTemp:"+xaxisTemp);
+
+		var query = "SELECT DISTINCT trim(zaxis),trim(yaxis)," + xaxisTemp.substring(0, xaxisTemp.length - 1) + 
+					" FROM ? " +
+					"order by case" +
+					" when trim(zaxis) = 'H' then  1" + 
+					" when trim(zaxis) = 'He' then  2" + 
+					" when trim(zaxis) = 'Li' then  3" + 
+					" when trim(zaxis) = 'Be' then  4" + 
+					" when trim(zaxis) = 'B' then  5" + 
+					" when trim(zaxis) = 'C' then  6" + 
+					" when trim(zaxis) = 'N' then  7" + 
+					" when trim(zaxis) = 'O' then  8" + 
+					" when trim(zaxis) = 'F' then  9" + 
+					" when trim(zaxis) = 'Ne' then  10" + 
+					" when trim(zaxis) = 'Na' then  11" + 
+					" when trim(zaxis) = 'Mg' then  12" + 
+					" when trim(zaxis) = 'Al' then  13" + 
+					" when trim(zaxis) = 'Si' then  14" + 
+					" when trim(zaxis) = 'P' then  15" + 
+					" when trim(zaxis) = 'S' then  16" + 
+					" when trim(zaxis) = 'Cl' then  17" + 
+					" when trim(zaxis) = 'Ar' then  18" + 
+					" when trim(zaxis) = 'K' then  19" + 
+					" when trim(zaxis) = 'Ca' then  20" + 
+					" when trim(zaxis) = 'Sc' then  21" + 
+					" when trim(zaxis) = 'Ti' then  22" + 
+					" when trim(zaxis) = 'V' then  23" + 
+					" when trim(zaxis) = 'Cr' then  24" + 
+					" when trim(zaxis) = 'Mn' then  25" + 
+					" when trim(zaxis) = 'Fe' then  26" + 
+					" when trim(zaxis) = 'Co' then  27" + 
+					" when trim(zaxis) = 'Ni' then  28" + 
+					" when trim(zaxis) = 'Cu' then  29" + 
+					" when trim(zaxis) = 'Zn' then  30" + 
+					" when trim(zaxis) = 'Ga' then  31" + 
+					" when trim(zaxis) = 'Ge' then  32" + 
+					" when trim(zaxis) = 'As' then  33" + 
+					" when trim(zaxis) = 'Se' then  34" + 
+					" when trim(zaxis) = 'Br' then  35" + 
+					" when trim(zaxis) = 'Kr' then  36" + 
+					" when trim(zaxis) = 'Rb' then  37" + 
+					" when trim(zaxis) = 'Sr' then  38" + 
+					" when trim(zaxis) = 'Y' then  39" + 
+					" when trim(zaxis) = 'Zr' then  40" + 
+					" when trim(zaxis) = 'Nb' then  41" + 
+					" when trim(zaxis) = 'Mo' then  42" + 
+					" when trim(zaxis) = 'Tc' then  43" + 
+					" when trim(zaxis) = 'Ru' then  44" + 
+					" when trim(zaxis) = 'Rh' then  45" + 
+					" when trim(zaxis) = 'Pd' then  46" + 
+					" when trim(zaxis) = 'Ag' then  47" + 
+					" when trim(zaxis) = 'Cd' then  48" + 
+					" when trim(zaxis) = 'In' then  49" + 
+					" when trim(zaxis) = 'Sn' then  50" + 
+					" when trim(zaxis) = 'Sb' then  51" + 
+					" when trim(zaxis) = 'Te' then  52" + 
+					" when trim(zaxis) = 'I' then  53" + 
+					" when trim(zaxis) = 'Xe' then  54" + 
+					" when trim(zaxis) = 'Cs' then  55" + 
+					" when trim(zaxis) = 'Ba' then  56" + 
+					" when trim(zaxis) = 'REE' then  57" + 
+					" when trim(zaxis) = 'La' then  58" + 
+					" when trim(zaxis) = 'Ce' then  59" + 
+					" when trim(zaxis) = 'Pr' then  60" + 
+					" when trim(zaxis) = 'Nd' then  61" + 
+					" when trim(zaxis) = 'Pm' then  62" + 
+					" when trim(zaxis) = 'Sm' then  63" + 
+					" when trim(zaxis) = 'Eu' then  64" + 
+					" when trim(zaxis) = 'Gd' then  65" + 
+					" when trim(zaxis) = 'Tb' then  66" + 
+					" when trim(zaxis) = 'Dy' then  67" + 
+					" when trim(zaxis) = 'Ho' then  68" + 
+					" when trim(zaxis) = 'Er' then  69" + 
+					" when trim(zaxis) = 'Tm' then  70" + 
+					" when trim(zaxis) = 'Yb' then  71" + 
+					" when trim(zaxis) = 'Lu' then  72" + 
+					" when trim(zaxis) = 'Hf' then  73" + 
+					" when trim(zaxis) = 'Ta' then  74" + 
+					" when trim(zaxis) = 'W' then  75" + 
+					" when trim(zaxis) = 'Re' then  76" + 
+					" when trim(zaxis) = 'Os' then  77" + 
+					" when trim(zaxis) = 'Ir' then  78" + 
+					" when trim(zaxis) = 'Pt' then  79" + 
+					" when trim(zaxis) = 'Au' then  80" + 
+					" when trim(zaxis) = 'Hg' then  81" + 
+					" when trim(zaxis) = 'Tl' then  82" + 
+					" when trim(zaxis) = 'Pb' then  83" + 
+					" when trim(zaxis) = 'Bi' then  84" + 
+					" when trim(zaxis) = 'Po' then  85" + 
+					" when trim(zaxis) = 'At' then  86" + 
+					" when trim(zaxis) = 'Rn' then  87" + 
+					" when trim(zaxis) = 'Fr' then  88" + 
+					" when trim(zaxis) = 'Ra' then  89" + 
+					" when trim(zaxis) = 'Ac' then  90" + 
+					" when trim(zaxis) = 'Th' then  91" + 
+					" when trim(zaxis) = 'Pa' then  92" + 
+					" when trim(zaxis) = 'U' then  93" + 
+					" when trim(zaxis) = 'Np' then  94" + 
+					" when trim(zaxis) = 'Pu' then  95" + 
+					" when trim(zaxis) = 'Am' then  96" + 
+					" when trim(zaxis) = 'Cm' then  97" + 
+					" when trim(zaxis) = 'Bk' then  98" + 
+					" when trim(zaxis) = 'Cf' then  99" + 
+					" when trim(zaxis) = 'Es' then  100" + 
+					" when trim(zaxis) = 'Fm' then  101" + 
+					" when trim(zaxis) = 'Md' then  102" + 
+					" when trim(zaxis) = 'No' then  103" + 
+					" when trim(zaxis) = 'Lr' then  104" + 
+					" when trim(zaxis) = 'Rf' then  105" + 
+					" when trim(zaxis) = 'Db' then  106" + 
+					" when trim(zaxis) = 'Sg' then  107" + 
+					" when trim(zaxis) = 'Bh' then  108" + 
+					" when trim(zaxis) = 'Hs' then  109" + 
+					" when trim(zaxis) = 'Mt' then  110" + 
+					" when trim(zaxis) = 'Ds' then  111" + 
+					" when trim(zaxis) = 'Rg' then  112" + 
+					" when trim(zaxis) = 'Cn' then  113" + 
+					" when trim(zaxis) = 'Nh' then  114" + 
+					" when trim(zaxis) = 'Fl' then  115" + 
+					" when trim(zaxis) = 'Mc' then  116" + 
+					" when trim(zaxis) = 'Lv' then  117" + 
+					" when trim(zaxis) = 'Ts' then  118" + 
+					" when trim(zaxis) = 'Og' then  119" +  
+					" else 200 end,"+
+					" case "+
+					" when trim(yaxis) = 'H' then  1" + 
+					" when trim(yaxis) = 'He' then  2" + 
+					" when trim(yaxis) = 'Li' then  3" + 
+					" when trim(yaxis) = 'Be' then  4" + 
+					" when trim(yaxis) = 'B' then  5" + 
+					" when trim(yaxis) = 'C' then  6" + 
+					" when trim(yaxis) = 'N' then  7" + 
+					" when trim(yaxis) = 'O' then  8" + 
+					" when trim(yaxis) = 'F' then  9" + 
+					" when trim(yaxis) = 'Ne' then  10" + 
+					" when trim(yaxis) = 'Na' then  11" + 
+					" when trim(yaxis) = 'Mg' then  12" + 
+					" when trim(yaxis) = 'Al' then  13" + 
+					" when trim(yaxis) = 'Si' then  14" + 
+					" when trim(yaxis) = 'P' then  15" + 
+					" when trim(yaxis) = 'S' then  16" + 
+					" when trim(yaxis) = 'Cl' then  17" + 
+					" when trim(yaxis) = 'Ar' then  18" + 
+					" when trim(yaxis) = 'K' then  19" + 
+					" when trim(yaxis) = 'Ca' then  20" + 
+					" when trim(yaxis) = 'Sc' then  21" + 
+					" when trim(yaxis) = 'Ti' then  22" + 
+					" when trim(yaxis) = 'V' then  23" + 
+					" when trim(yaxis) = 'Cr' then  24" + 
+					" when trim(yaxis) = 'Mn' then  25" + 
+					" when trim(yaxis) = 'Fe' then  26" + 
+					" when trim(yaxis) = 'Co' then  27" + 
+					" when trim(yaxis) = 'Ni' then  28" + 
+					" when trim(yaxis) = 'Cu' then  29" + 
+					" when trim(yaxis) = 'Zn' then  30" + 
+					" when trim(yaxis) = 'Ga' then  31" + 
+					" when trim(yaxis) = 'Ge' then  32" + 
+					" when trim(yaxis) = 'As' then  33" + 
+					" when trim(yaxis) = 'Se' then  34" + 
+					" when trim(yaxis) = 'Br' then  35" + 
+					" when trim(yaxis) = 'Kr' then  36" + 
+					" when trim(yaxis) = 'Rb' then  37" + 
+					" when trim(yaxis) = 'Sr' then  38" + 
+					" when trim(yaxis) = 'Y' then  39" + 
+					" when trim(yaxis) = 'Zr' then  40" + 
+					" when trim(yaxis) = 'Nb' then  41" + 
+					" when trim(yaxis) = 'Mo' then  42" + 
+					" when trim(yaxis) = 'Tc' then  43" + 
+					" when trim(yaxis) = 'Ru' then  44" + 
+					" when trim(yaxis) = 'Rh' then  45" + 
+					" when trim(yaxis) = 'Pd' then  46" + 
+					" when trim(yaxis) = 'Ag' then  47" + 
+					" when trim(yaxis) = 'Cd' then  48" + 
+					" when trim(yaxis) = 'In' then  49" + 
+					" when trim(yaxis) = 'Sn' then  50" + 
+					" when trim(yaxis) = 'Sb' then  51" + 
+					" when trim(yaxis) = 'Te' then  52" + 
+					" when trim(yaxis) = 'I' then  53" + 
+					" when trim(yaxis) = 'Xe' then  54" + 
+					" when trim(yaxis) = 'Cs' then  55" + 
+					" when trim(yaxis) = 'Ba' then  56" + 
+					" when trim(yaxis) = 'REE' then  57" + 
+					" when trim(yaxis) = 'La' then  58" + 
+					" when trim(yaxis) = 'Ce' then  59" + 
+					" when trim(yaxis) = 'Pr' then  60" + 
+					" when trim(yaxis) = 'Nd' then  61" + 
+					" when trim(yaxis) = 'Pm' then  62" + 
+					" when trim(yaxis) = 'Sm' then  63" + 
+					" when trim(yaxis) = 'Eu' then  64" + 
+					" when trim(yaxis) = 'Gd' then  65" + 
+					" when trim(yaxis) = 'Tb' then  66" + 
+					" when trim(yaxis) = 'Dy' then  67" + 
+					" when trim(yaxis) = 'Ho' then  68" + 
+					" when trim(yaxis) = 'Er' then  69" + 
+					" when trim(yaxis) = 'Tm' then  70" + 
+					" when trim(yaxis) = 'Yb' then  71" + 
+					" when trim(yaxis) = 'Lu' then  72" + 
+					" when trim(yaxis) = 'Hf' then  73" + 
+					" when trim(yaxis) = 'Ta' then  74" + 
+					" when trim(yaxis) = 'W' then  75" + 
+					" when trim(yaxis) = 'Re' then  76" + 
+					" when trim(yaxis) = 'Os' then  77" + 
+					" when trim(yaxis) = 'Ir' then  78" + 
+					" when trim(yaxis) = 'Pt' then  79" + 
+					" when trim(yaxis) = 'Au' then  80" + 
+					" when trim(yaxis) = 'Hg' then  81" + 
+					" when trim(yaxis) = 'Tl' then  82" + 
+					" when trim(yaxis) = 'Pb' then  83" + 
+					" when trim(yaxis) = 'Bi' then  84" + 
+					" when trim(yaxis) = 'Po' then  85" + 
+					" when trim(yaxis) = 'At' then  86" + 
+					" when trim(yaxis) = 'Rn' then  87" + 
+					" when trim(yaxis) = 'Fr' then  88" + 
+					" when trim(yaxis) = 'Ra' then  89" + 
+					" when trim(yaxis) = 'Ac' then  90" + 
+					" when trim(yaxis) = 'Th' then  91" + 
+					" when trim(yaxis) = 'Pa' then  92" + 
+					" when trim(yaxis) = 'U' then  93" + 
+					" when trim(yaxis) = 'Np' then  94" + 
+					" when trim(yaxis) = 'Pu' then  95" + 
+					" when trim(yaxis) = 'Am' then  96" + 
+					" when trim(yaxis) = 'Cm' then  97" + 
+					" when trim(yaxis) = 'Bk' then  98" + 
+					" when trim(yaxis) = 'Cf' then  99" + 
+					" when trim(yaxis) = 'Es' then  100" + 
+					" when trim(yaxis) = 'Fm' then  101" + 
+					" when trim(yaxis) = 'Md' then  102" + 
+					" when trim(yaxis) = 'No' then  103" + 
+					" when trim(yaxis) = 'Lr' then  104" + 
+					" when trim(yaxis) = 'Rf' then  105" + 
+					" when trim(yaxis) = 'Db' then  106" + 
+					" when trim(yaxis) = 'Sg' then  107" + 
+					" when trim(yaxis) = 'Bh' then  108" + 
+					" when trim(yaxis) = 'Hs' then  109" + 
+					" when trim(yaxis) = 'Mt' then  110" + 
+					" when trim(yaxis) = 'Ds' then  111" + 
+					" when trim(yaxis) = 'Rg' then  112" + 
+					" when trim(yaxis) = 'Cn' then  113" + 
+					" when trim(yaxis) = 'Nh' then  114" + 
+					" when trim(yaxis) = 'Fl' then  115" + 
+					" when trim(yaxis) = 'Mc' then  116" + 
+					" when trim(yaxis) = 'Lv' then  117" + 
+					" when trim(yaxis) = 'Ts' then  118" + 
+					" when trim(yaxis) = 'Og' then  119" +
+					" else 200 end";
+		//console.log("querying by aladata: ");
+		//console.log(query);
+		var alaData = (alasql(query, [jsonObject]));
+		//console.log("alaData:"+alaData);
+		var jsonObjectsub = JSON.stringify(alaData);
+		var jsonStringsub = JSON.parse(jsonObjectsub);
+		createCSV(jsonStringsub);
+		//console.log("dataset: "+dataset.join("\n"));
+		var config = {
+			header:true,
+			dynamicTyping: true
+		};
+		if(jsonObjectsub !== undefined ){
+		console.log("removing local storage");
+			localStorage.removeItem("jsonObjectsub");
+			localStorage.removeItem("xAxisCount");
+			localStorage.removeItem("yAxisCount");
+			localStorage.removeItem("zAxisCount");
+			localStorage.removeItem("isAllEle");
+			//console.log("jsonObjectsub:"+jsonObjectsub);
+			localStorage.setItem("jsonObjectsub", jsonObjectsub);
+			console.log("length-2"+length-2);
+			localStorage.setItem("xAxisCount", length-2);
+			localStorage.setItem("yAxisCount", length-2);
+			localStorage.setItem("zAxisCount", length-2);
+			localStorage.removeItem("localfilename", filename);
+			localStorage.setItem("localfilename", filename);	
+			localStorage.setItem("isAllEle", 1);
+			localStorage.removeItem("headerlength");
+			localStorage.setItem("headerlength", length-2);
+			//console.log("headerlength:"+ length-2)			
+
+			//console.log("redirectWindow:"+redirectWindow);
+			if(redirectWindow!=null){
+				if(!redirectWindow.closed){
+					redirectWindow.close();
+				}
+			}
+			redirectWindow = window.open('cube-matrix-any-elements-opacity-mousemove++plane++_bk.html', 'redirectWindow');
+			//redirectWindow = window.open('/any-elements_cube_bk', 'redirectWindow');
+			redirectWindow.location;
+		}
+		else{
+			window.alert("Please load file!!");
+		}
+	});
+
+	function clearSelection(){
+		xaxis = "";
+		xAxisCount=0;
+		yaxis = "";
+		yAxisCount=0;
+		zaxis = "";
+		zAxisCount=0;
+		filename = "";
+		table.find("td").removeClass("selected").addClass("unselected");
+		//table.find("td").addClass("unselected");
+		document.getElementById("txtXaxis").value = "";
+		document.getElementById("txtYaxis").value = "";
+		document.getElementById("txtZaxis").value = "";
+		document.getElementById("txtXaxis").focus();
+		selectedAxis = "x";
+		selectElement('select-model', '-1');
+	};
+
+	function selectElement(id, valueToSelect) {
+		let element = document.getElementById(id);
+		element.value = valueToSelect;
+	}
+	$('#select-datasets').change(function (){
+		var val_dataset = $('#select-datasets option:selected').val()
+		switch(val_dataset) {
+				case "-1":
+						break;
+				case "4":
+ 				///
+					clearSelection();
+					document.getElementById("select-model").disabled = true;
+					document.getElementById("elm_comb").style.color = "grey";
+					document.getElementById("random_elm").style.color = "black";
+
+
+					headers = "";
+					dataset = []; //clearing data array. this cannot be done in clearSelection function because it will also clear the loaded csv
+					length = 0;
+					table.find(".present").removeClass("present");
+					table.find(".notpresent").removeClass("notpresent");
+					//var	file = "./30\-elements-normalized\ \-\ no_blank_lines.csv";
+					var	file = "../static/js/3DCube/30_elements.csv";
+
+					console.log("filename:"+file);
+					var config = {
+							header:true,
+							dynamicTyping: true
+						};
+
+					var csvdata;
+					var temp;
+					$.get(file,function(results){
+						csvdata = Papa.parse(results,config);
+						temp = results;
+						filename = "../static/js/3DCube/30_ELEMENTS.csv";
+						console.log("data inside load:"+csvdata.data.length);
+						console.log("data inside load:"+csvdata.data[0]);
+						//console.log("data inside load:"+results);
+						//console.log("results inside load:"+results);
+						//console.log("results inside load:"+temp);
+						}).then(function(){
+						getHeaders(temp.split("\n"));
+						selectData();
+						});
+					break;
+
+				case "5":
+ 				///
+					clearSelection();
+					document.getElementById("select-model").disabled = true;
+					document.getElementById("elm_comb").style.color = "grey";
+					document.getElementById("random_elm").style.color = "black";
+
+					headers = "";
+					dataset = []; //clearing data array. this cannot be done in clearSelection function because it will also clear the loaded csv
+					length = 0;
+					table.find(".present").removeClass("present");
+					table.find(".notpresent").removeClass("notpresent");
+					//var	file = "./30\-elements-normalized\ \-\ no_blank_lines.csv";
+					var	file = "../static/js/3DCube/30_sigelements.csv";
+
+					console.log("filename:"+file);
+					var config = {
+							header:true,
+							dynamicTyping: true
+						};
+
+					var csvdata;
+					var temp;
+					$.get(file,function(results){
+						csvdata = Papa.parse(results,config);
+						temp = results;
+						filename = "../static/js/3DCube/30_SIGELMENTS.csv";
+						console.log("data inside load:"+csvdata.data.length);
+						console.log("data inside load:"+csvdata.data[0]);
+						//console.log("data inside load:"+results);
+						//console.log("results inside load:"+results);
+						//console.log("results inside load:"+temp);
+						}).then(function(){
+						getHeaders(temp.split("\n"));
+						selectData();
+						});
+					break;
+				case "6":
+ 				///
+					clearSelection();
+					document.getElementById("select-model").disabled = true;
+					document.getElementById("elm_comb").style.color = "grey";
+					document.getElementById("random_elm").style.color = "black";
+
+					headers = "";
+					dataset = []; //clearing data array. this cannot be done in clearSelection function because it will also clear the loaded csv
+					length = 0;
+					table.find(".present").removeClass("present");
+					table.find(".notpresent").removeClass("notpresent");
+					//var	file = "./30\-elements-normalized\ \-\ no_blank_lines.csv";
+					var	file = "../static/js/3DCube/normalized_30_elements.csv";
+
+					console.log("filename:"+file);
+					var config = {
+							header:true,
+							dynamicTyping: true
+						};
+
+					var csvdata;
+					var temp;
+					$.get(file,function(results){
+						csvdata = Papa.parse(results,config);
+						temp = results;
+						//filename = "30\-ELEMENTS-NORMALIZED\ \-\ NO_BLANK_LINES.CSV";
+						filename = "../static/js/3DCube/30\-ELEMENTS-NORMALIZED.CSV";
+						console.log("data inside load:"+csvdata.data.length);
+						console.log("data inside load:"+csvdata.data[0]);
+						//console.log("data inside load:"+results);
+						//console.log("results inside load:"+results);
+						//console.log("results inside load:"+temp);
+						}).then(function(){
+						getHeaders(temp.split("\n"));
+						selectData();
+						});
+					break;
+				case "7":
+					clearSelection();
+					document.getElementById("select-model").disabled = true;
+					document.getElementById("elm_comb").style.color = "grey";
+					document.getElementById("random_elm").style.color = "black";
+
+					headers = "";
+					dataset = []; //clearing data array. this cannot be done in clearSelection function because it will also clear the loaded csv
+					length = 0;
+					table.find(".present").removeClass("present");
+					table.find(".notpresent").removeClass("notpresent");
+					//var	file = "./30\-elements-normalized\ \-\ no_blank_lines.csv";
+					var	file = "../static/js/3DCube/normalized_30_sigelements.csv";
+
+					console.log("filename:"+file);
+					var config = {
+							header:true,
+							dynamicTyping: true
+						};
+
+					var csvdata;
+					var temp;
+					$.get(file,function(results){
+						csvdata = Papa.parse(results,config);
+						temp = results;
+						filename = "../static/js/3DCube/30\-ELEMENTS-NORMALIZED\ \SIGELMENTS.CSV";
+						console.log("data inside load:"+csvdata.data.length);
+						console.log("data inside load:"+csvdata.data[0]);
+						//console.log("data inside load:"+results);
+						//console.log("results inside load:"+results);
+						//console.log("results inside load:"+temp);
+						}).then(function(){
+						getHeaders(temp.split("\n"));
+						selectData();
+						});
+					break;
+
+				case "8":
+ 				///
+ 					clearSelection();
+					document.getElementById("select-model").disabled = false;
+					document.getElementById("elm_comb").style.color = "black";
+					document.getElementById("random_elm").style.color = "black";
+
+					headers = "";
+					dataset = []; //clearing data array. this cannot be done in clearSelection function because it will also clear the loaded csv
+					length = 0;
+					table.find(".present").removeClass("present");
+					table.find(".notpresent").removeClass("notpresent");
+					//var	file = "./30\-elements-normalized\ \-\ no_blank_lines.csv";
+					var	file = "../static/js/3DCube/72_elements.csv";
+
+					console.log("filename:"+file);
+					var config = {
+							header:true,
+							dynamicTyping: true
+						};
+
+					var csvdata;
+					var temp;
+					$.get(file,function(results){
+						csvdata = Papa.parse(results,config);
+						temp = results;
+						filename = "../static/js/3DCube/72\-ELEMENTS.CSV";
+						console.log("data inside load:"+csvdata.data.length);
+						console.log("data inside load:"+csvdata.data[0]);
+						//console.log("data inside load:"+results);
+						//console.log("results inside load:"+results);
+						//console.log("results inside load:"+temp);
+						}).then(function(){
+						getHeaders(temp.split("\n"));
+						selectData();
+						});
+					break;
+
+				case "9":
+ 				///
+ 					clearSelection();
+					document.getElementById("select-model").disabled = false;
+					document.getElementById("elm_comb").style.color = "black";
+					document.getElementById("random_elm").style.color = "black";
+
+					headers = "";
+					dataset = []; //clearing data array. this cannot be done in clearSelection function because it will also clear the loaded csv
+					length = 0;
+					table.find(".present").removeClass("present");
+					table.find(".notpresent").removeClass("notpresent");
+					var	file = "../static/js/3DCube/72_sigelements.csv";
+					console.log("filename:"+file);
+					var config = {
+							header:true,
+							dynamicTyping: true
+						};
+
+					var csvdata;
+					var temp;
+					$.get(file,function(results){
+						csvdata = Papa.parse(results,config);
+						temp = results;
+						filename = "../static/js/3DCube/72\-ELEMENTS-SIGELEMENTS.CSV";
+						console.log("data inside load:"+csvdata.data.length);
+						console.log("data inside load:"+csvdata.data[0]);
+						//console.log("data inside load:"+results);
+						//console.log("results inside load:"+results);
+						//console.log("results inside load:"+temp);
+						}).then(function(){
+						getHeaders(temp.split("\n"));
+						selectData();
+						});
+					break;
+
+				case "10":
+ 				///
+ 					clearSelection();
+					document.getElementById("select-model").disabled = false;
+					document.getElementById("elm_comb").style.color = "black";
+					document.getElementById("random_elm").style.color = "black";
+
+					headers = "";
+					dataset = []; //clearing data array. this cannot be done in clearSelection function because it will also clear the loaded csv
+					length = 0;
+					table.find(".present").removeClass("present");
+					table.find(".notpresent").removeClass("notpresent");
+					var	file = "../static/js/3DCube/normalized_72_elements.csv";
+
+					console.log("filename:"+file);
+					var config = {
+							header:true,
+							dynamicTyping: true
+						};
+
+					var csvdata;
+					var temp;
+					$.get(file,function(results){
+						csvdata = Papa.parse(results,config);
+						temp = results;
+						filename = "../static/js/3DCube/72\-ELEMENTS-NORMALIZED\.CSV";
+						console.log("data inside load:"+csvdata.data.length);
+						console.log("data inside load:"+csvdata.data[0]);
+						//console.log("data inside load:"+results);
+						//console.log("results inside load:"+results);
+						//console.log("results inside load:"+temp);
+						}).then(function(){
+						getHeaders(temp.split("\n"));
+						selectData();
+						});
+					break;
+				case "11":
+ 				///
+ 					clearSelection();
+					document.getElementById("select-model").disabled = false;
+					document.getElementById("elm_comb").style.color = "black";
+					document.getElementById("random_elm").style.color = "black";
+
+					headers = "";
+					dataset = []; //clearing data array. this cannot be done in clearSelection function because it will also clear the loaded csv
+					length = 0;
+					table.find(".present").removeClass("present");
+					table.find(".notpresent").removeClass("notpresent");
+					var	file = "../static/js/3DCube/normalized_72_sigelements.csv";
+
+					console.log("filename:"+file);
+					var config = {
+							header:true,
+							dynamicTyping: true
+						};
+
+					var csvdata;
+					var temp;
+					$.get(file,function(results){
+						csvdata = Papa.parse(results,config);
+						temp = results;
+						filename = "../static/js/3DCube/72\-ELEMENTS-NORMALIZED\ \-\ SIGEL.CSV";
+						console.log("data inside load:"+csvdata.data.length);
+						console.log("data inside load:"+csvdata.data[0]);
+						//console.log("data inside load:"+results);
+						//console.log("results inside load:"+results);
+						//console.log("results inside load:"+temp);
+						}).then(function(){
+						getHeaders(temp.split("\n"));
+						selectData();
+						});
+					break;
+ 			default:
+ 					alert("case default");
+		}
+	}
+	);
+	$('#select-model').change(function () {
+		var Valtxt = $('#select-model option:selected').val()
+		switch(Valtxt) {
+		  case "-1":
+			break;
+		   case "1":
+				if(selectedAxis == "x"){
+					document.getElementById("txtXaxis").value = "C";
+					xaxis = "C";
+					xAxisCount=1;
+				}
+				else if (selectedAxis == "y"){
+					document.getElementById("txtYaxis").value = "C";
+					yaxis = "C";
+					yAxisCount=1;
+				}
+				else{
+					document.getElementById("txtZaxis").value = "C";
+					zaxis = "C";
+					zAxisCount=1;
+				}
+				break;
+		  case "2":
+
+				if(selectedAxis == "x"){
+					document.getElementById("txtXaxis").value = "S,Fe,Cu,Zn,Mo,Pb";
+					xaxis = "S,Fe,Cu,Zn,Mo,Pb";
+					xAxisCount=6;
+				}
+				else if (selectedAxis == "y"){
+					document.getElementById("txtYaxis").value = "S,Fe,Cu,Zn,Mo,Pb";
+					yaxis = "S,Fe,Cu,Zn,Mo,Pb";
+					yAxisCount=6;
+				}
+				else{
+					document.getElementById("txtZaxis").value = "S,Fe,Cu,Zn,Mo,Pb";
+					zaxis = "S,Fe,Cu,Zn,Mo,Pb";
+					zAxisCount=6;
+				}
+				break;
+		  case "3":
+				if(selectedAxis == "x"){
+					document.getElementById("txtXaxis").value = "H,O,F,Na,Mg,Al,Ca,Ti,Cr,Mn,Fe,Y,Zr,Nb,Sn,Ce,Ta,Pb,Th,U";
+					xaxis = "H,O,F,Na,Mg,Al,Ca,Ti,Cr,Mn,Fe,Y,Zr,Nb,Sn,Ce,Ta,Pb,Th,U";
+					xAxisCount=20;
+				}
+				else if (selectedAxis == "y"){
+					document.getElementById("txtYaxis").value = "H,O,F,Na,Mg,Al,Ca,Ti,Cr,Mn,Fe,Y,Zr,Nb,Sn,Ce,Ta,Pb,Th,U";
+					yaxis = "H,O,F,Na,Mg,Al,Ca,Ti,Cr,Mn,Fe,Y,Zr,Nb,Sn,Ce,Ta,Pb,Th,U";
+					yAxisCount=20;
+				}
+				else{
+					document.getElementById("txtZaxis").value = "H,O,F,Na,Mg,Al,Ca,Ti,Cr,Mn,Fe,Y,Zr,Nb,Sn,Ce,Ta,Pb,Th,U";
+					zaxis = "H,O,F,Na,Mg,Al,Ca,Ti,Cr,Mn,Fe,Y,Zr,Nb,Sn,Ce,Ta,Pb,Th,U";
+					zAxisCount=20;
+				}
+		  		break;
+
+		  case "4":
+				if(selectedAxis == "x"){
+					document.getElementById("txtXaxis").value = "F,Ca";
+					xaxis = "F,Ca";
+					xAxisCount=2;
+				}
+				else if (selectedAxis == "y"){
+					document.getElementById("txtYaxis").value = "F,Ca";
+					yaxis = "F,Ca";
+					yAxisCount=2;
+				}
+				else{
+					document.getElementById("txtZaxis").value = "F,Ca";
+					zaxis = "F,Ca";
+					zAxisCount=2;
+				}
+		  		break;
+		  case "5":
+					if(selectedAxis == "x"){
+						document.getElementById("txtXaxis").value =  "H,C,O,F,Na,Mg,Ca,Fe,Sr,Y,Ba,La,Ce";
+						xaxis =  "H,C,O,F,Na,Mg,Ca,Fe,Sr,Y,Ba,La,Ce";
+						xAxisCount=13;
+					}
+					else if (selectedAxis == "y"){
+						document.getElementById("txtYaxis").value =  "H,C,O,F,Na,Mg,Ca,Fe,Sr,Y,Ba,La,Ce";
+						yaxis =  "H,C,O,F,Na,Mg,Ca,Fe,Sr,Y,Ba,La,Ce";
+						yAxisCount=13;
+					}
+					else{
+						document.getElementById("txtZaxis").value =  "H,C,O,F,Na,Mg,Ca,Fe,Sr,Y,Ba,La,Ce";
+						zaxis =  "H,C,O,F,Na,Mg,Ca,Fe,Sr,Y,Ba,La,Ce";
+						zAxisCount=13;
+					}
+					break;
+		  case "6":
+					if(selectedAxis == "x"){
+						document.getElementById("txtXaxis").value = "O,S,Ba";
+						xaxis = "O,S,Ba";
+						xAxisCount= 3;
+					}
+					else if (selectedAxis == "y"){
+						document.getElementById("txtYaxis").value = "O,S,Ba";
+						yaxis =  "O,S,Ba";
+						yAxisCount= 3;
+					}
+					else{
+						document.getElementById("txtZaxis").value =  "O,S,Ba";
+						zaxis =  "O,S,Ba";
+						zAxisCount=3;
+					}
+					break;
+		  case "7":
+					if(selectedAxis == "x"){
+						document.getElementById("txtXaxis").value = "H,Li,O,F,Al,P,Cl,Ca,Fe,As,Y";
+						xaxis = "H,Li,O,F,Al,P,Cl,Ca,Fe,As,Y";
+						xAxisCount= 11;
+					}
+					else if (selectedAxis == "y"){
+						document.getElementById("txtYaxis").value = "H,Li,O,F,Al,P,Cl,Ca,Fe,As,Y";
+						yaxis =  "H,Li,O,F,Al,P,Cl,Ca,Fe,As,Y";
+						yAxisCount= 11;
+					}
+					else{
+						document.getElementById("txtZaxis").value =  "H,Li,O,F,Al,P,Cl,Ca,Fe,As,Y";
+						zaxis = "H,Li,O,F,Al,P,Cl,Ca,Fe,As,Y";
+						zAxisCount= 11;
+					}
+					break;
+
+		  case "8":
+		  			if(selectedAxis == "x"){
+						document.getElementById("txtXaxis").value = "H,Li,Be,O,F,Mg,Al,Si,S,Ca,Ti,Mn,Fe,Y,Zr,I,Th";
+						xaxis = "H,Li,Be,O,F,Mg,Al,Si,S,Ca,Ti,Mn,Fe,Y,Zr,I,Th";
+						xAxisCount= 17;
+					}
+					else if (selectedAxis == "y"){
+						document.getElementById("txtYaxis").value = "H,Li,Be,O,F,Mg,Al,Si,S,Ca,Ti,Mn,Fe,Y,Zr,I,Th";
+						yaxis =  "H,Li,Be,O,F,Mg,Al,Si,S,Ca,Ti,Mn,Fe,Y,Zr,I,Th";
+						yAxisCount= 17;
+					}
+					else{
+						document.getElementById("txtZaxis").value =  "H,Li,Be,O,F,Mg,Al,Si,S,Ca,Ti,Mn,Fe,Y,Zr,I,Th";
+						zaxis = "H,Li,Be,O,F,Mg,Al,Si,S,Ca,Ti,Mn,Fe,Y,Zr,I,Th";
+						zAxisCount= 17;
+					}
+					break;
+		  case "9":
+					if(selectedAxis == "x"){
+						document.getElementById("txtXaxis").value = "H,Be,O,F,Na,Mg,Al,Si,K,Ca,Ti,Cr,Mn,Fe,Sr,Y,Zr,Nb,Ba,W";
+						xaxis = "H,Be,O,F,Na,Mg,Al,Si,K,Ca,Ti,Cr,Mn,Fe,Sr,Y,Zr,Nb,Ba,W";
+						xAxisCount= 20;
+					}
+					else if (selectedAxis == "y"){
+						document.getElementById("txtYaxis").value = "H,Be,O,F,Na,Mg,Al,Si,K,Ca,Ti,Cr,Mn,Fe,Sr,Y,Zr,Nb,Ba,W";
+						yaxis = "H,Be,O,F,Na,Mg,Al,Si,K,Ca,Ti,Cr,Mn,Fe,Sr,Y,Zr,Nb,Ba,W";
+						yAxisCount= 20;
+					}
+					else{
+						document.getElementById("txtZaxis").value =  "H,Be,O,F,Na,Mg,Al,Si,K,Ca,Ti,Cr,Mn,Fe,Sr,Y,Zr,Nb,Ba,W";
+						zaxis = "H,Be,O,F,Na,Mg,Al,Si,K,Ca,Ti,Cr,Mn,Fe,Sr,Y,Zr,Nb,Ba,W";
+						zAxisCount= 20;
+					}
+					break;
+		  case "10":
+		  			if(selectedAxis == "x"){
+						document.getElementById("txtXaxis").value = "H,Li,Be,B,O,F,Na,Mg,Al,Si,Cl,Ca,Fe,Zr,Cs";
+						xaxis = "H,Li,Be,B,O,F,Na,Mg,Al,Si,Cl,Ca,Fe,Zr,Cs";
+						xAxisCount= 15;
+					}
+					else if (selectedAxis == "y"){
+						document.getElementById("txtYaxis").value = "H,Li,Be,B,O,F,Na,Mg,Al,Si,Cl,Ca,Fe,Zr,Cs";
+						yaxis = "H,Li,Be,B,O,F,Na,Mg,Al,Si,Cl,Ca,Fe,Zr,Cs";
+						yAxisCount= 15;
+					}
+					else{
+						document.getElementById("txtZaxis").value = "H,Li,Be,B,O,F,Na,Mg,Al,Si,Cl,Ca,Fe,Zr,Cs";
+						zaxis = "H,Li,Be,B,O,F,Na,Mg,Al,Si,Cl,Ca,Fe,Zr,Cs";
+						zAxisCount= 15;
+					}
+					break;
+		  case "11":
+					if(selectedAxis == "x"){
+							document.getElementById("txtXaxis").value = "H,Li,O,F,Na,Mg,Al,Si,Cl,K,Ca,Ti,Mn,Fe,Zr,Nb,Cs";
+							xaxis = "H,Li,O,F,Na,Mg,Al,Si,Cl,K,Ca,Ti,Mn,Fe,Zr,Nb,Cs";
+							xAxisCount= 17;
+						}
+						else if (selectedAxis == "y"){
+							document.getElementById("txtYaxis").value = "H,Li,O,F,Na,Mg,Al,Si,Cl,K,Ca,Ti,Mn,Fe,Zr,Nb,Cs";
+							yaxis = "H,Li,O,F,Na,Mg,Al,Si,Cl,K,Ca,Ti,Mn,Fe,Zr,Nb,Cs";
+							yAxisCount= 17;
+						}
+						else{
+							document.getElementById("txtZaxis").value = "H,Li,O,F,Na,Mg,Al,Si,Cl,K,Ca,Ti,Mn,Fe,Zr,Nb,Cs";
+							zaxis = "H,Li,O,F,Na,Mg,Al,Si,Cl,K,Ca,Ti,Mn,Fe,Zr,Nb,Cs";
+							zAxisCount= 17;
+						}
+						break;
+
+		  case "12":
+						if(selectedAxis == "x"){
+							document.getElementById("txtXaxis").value = "H,Li,O,F,Mg,Al,Si,Cl,K,Ti,V,Cr,Mn,Fe,Rb,Cs";
+							xaxis = "H,Li,O,F,Mg,Al,Si,Cl,K,Ti,V,Cr,Mn,Fe,Rb,Cs";
+							xAxisCount= 16;
+						}
+						else if (selectedAxis == "y"){
+							document.getElementById("txtYaxis").value = "H,Li,O,F,Mg,Al,Si,Cl,K,Ti,V,Cr,Mn,Fe,Rb,Cs";
+							yaxis = "H,Li,O,F,Mg,Al,Si,Cl,K,Ti,V,Cr,Mn,Fe,Rb,Cs";
+							yAxisCount= 16;
+						}
+						else{
+							document.getElementById("txtZaxis").value = "H,Li,O,F,Mg,Al,Si,Cl,K,Ti,V,Cr,Mn,Fe,Rb,Cs";
+							zaxis = "H,Li,O,F,Mg,Al,Si,Cl,K,Ti,V,Cr,Mn,Fe,Rb,Cs";
+							zAxisCount= 16;
+						}
+						break;
+
+		  case "13":
+		  				if(selectedAxis == "x"){
+							document.getElementById("txtXaxis").value = "H,C,O,Na,Mg,Al,Si,S,Cl,K,Ca,Fe,Cs";
+							xaxis = "H,C,O,Na,Mg,Al,Si,S,Cl,K,Ca,Fe,Cs";
+							xAxisCount= 13;
+						}
+						else if (selectedAxis == "y"){
+							document.getElementById("txtYaxis").value = "H,C,O,Na,Mg,Al,Si,S,Cl,K,Ca,Fe,Cs";
+							yaxis = "H,C,O,Na,Mg,Al,Si,S,Cl,K,Ca,Fe,Cs";
+							yAxisCount= 13;
+						}
+						else{
+							document.getElementById("txtZaxis").value = "H,C,O,Na,Mg,Al,Si,S,Cl,K,Ca,Fe,Cs";
+							zaxis = "H,C,O,Na,Mg,Al,Si,S,Cl,K,Ca,Fe,Cs";
+							zAxisCount= 13;
+						}
+						break;
+		  default:
+			// code block
+			alert("case default")
+		}
+
+		}
+
+	);
+
+	$("#txtXaxis").click( function(event){ 
+		selectedAxis = "x";
+		highlightHeaders();
+		selectElement('select-model', '-1');
+		}
+	);
+	$("#txtYaxis").click( function(event){ 
+		selectedAxis = "y"; 
+		highlightHeaders();
+		selectElement('select-model', '-1');
+		}
+	);
+	$("#txtZaxis").click( function(event){ 
+		selectedAxis = "z"; 
+		highlightHeaders();
+		selectElement('select-model', '-1');
+	}
+	);	
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Interactive 3D Cube Matrix</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #f0f0f0;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#myCanvas {
+				position: absolute;
+				left: 10px;
+				top: 120px;
+			}
+			
+			#buttons {
+				position: absolute;
+				left: 0px;
+				top: 0px;
+			}
+			
+			#elementButtons {
+				position: absolute;
+				left: 50px;
+				bottom: 0px;
+			}
+		</style>
+	</head>
+	
+	<body>
+	<div id="buttons">
+	<input type="button" value="Cube opacity +" onClick="increaseOpacity();" />
+	<input type="button" value="Cube opacity -" onClick="decreaseOpacity();" />
+	<input type="button" value="Opacity by mineral counts" onClick="opacityByMineralCounts();" />
+	<input type="button" value="Color by logarithmic values: log(v*2)" onClick="colorByLogarithmicValues();" />
+	<input type="button" value="X offset +" onClick="increaseXoffset();" />
+	<input type="button" value="X offset -" onClick="decreaseXoffset();" />
+	<input type="button" value="Y offset +" onClick="increaseYoffset();" />
+	<input type="button" value="Y offset -" onClick="decreaseYoffset();" />
+	<input type="button" value="Z offset +" onClick="increaseZoffset();" />
+	<input type="button" value="Z offset -" onClick="decreaseZoffset();" /> 
+	<input type="button" value="Rebuild cube matrix" onClick="rebuildAllCubes();"/>
+	<br>
+		Remove cubes with value less than:
+	<input id="numberCubes" type="text" size="5">
+	<input type="button" id="removeCubesLessThan" value="Submit">
+
+	<br><b id="cellInfo" style="background-color: lightgrey;"></b>
+	</div>
+	<div id="elementButtons"> 
+	</div>
+	<canvas id="myCanvas" width="50" height="500" >
+	<script src="../static/js/3DCube/three.min.js"></script>
+	<script src="../static/js/3DCube/TrackballControls.js"></script>
+	<script src="../static/js/3DCube/rainbowvis.js"></script>
+	<script src="../static/js/3DCube/jquery-1.9.1.js"></script>
+	<script type="text/javascript" src="../static/js/3DCube/papaparse.js"></script>
+	<script>
+	
+	//variable declaration
+	var xAxisCount;				
+	var yAxisCount;
+	var zAxisCount;
+	var container;
+	var camera, controls, scene, renderer;
+	var raycaster = new THREE.Raycaster();
+	var csvRows;
+	var deafaultOffset = 1.2;
+	var radius = 100, cubeValue = [];
+	var localfilename="";
+	var headerlength = 0;
+	var isAllEle = 0;
+	var max_number = -Infinity;
+	var min_mumber = Infinity;
+
+	
+	//2D vector
+	var mouse = new THREE.Vector2(), intersectedObject, objectOriginalHex, objectOriginalOpacity ;
+	var cubeOffset = new THREE.Vector3( 10, 10, 10 );	
+
+	Array.prototype.max = function() {
+	  return Math.max.apply(null, this);
+	};
+
+	Array.prototype.min = function() {
+	  return Math.min.apply(null, this);
+	};
+
+	window.onload = function(e){ 		
+		isAllEle = localStorage.getItem("isAllEle"); //visualize everything = 1 or subset =0
+		console.log("isAllEle : "+isAllEle);
+		xAxisCount = localStorage.getItem("xAxisCount");
+		console.log("xAxisCount :): "+xAxisCount);
+		yAxisCount = localStorage.getItem("yAxisCount");
+		console.log("yAxisCount : "+yAxisCount);
+		zAxisCount = localStorage.getItem("zAxisCount");
+		console.log("zAxisCount : "+zAxisCount);
+		localfilename = localStorage.getItem("localfilename");
+		console.log("localfilename : "+localfilename);
+		headerlength = localStorage.getItem("headerlength");
+		console.log("headerlength : "+headerlength);				
+		var obj = JSON.parse(localStorage.getItem("jsonObjectsub")); //parse json into javascript object
+		//console.log("retrieved dataset: " + obj);
+
+		//if(isAllEle==1){ //the visualize selected and visualize all option send data in different format
+			//csvRows = obj.split("\n");
+		//}else{
+			var config = {
+				quotes:false,
+				header:true,
+				dynamicTyping: true,
+				trim: true 
+			};
+			csvRows = Papa.unparse(obj,config).split("\n");
+		//}
+		console.log("csvRows : "+csvRows[0].split(","));
+		console.log("csvRows.length : "+csvRows.length);
+		columns = csvRows[0].split(",").length-2;
+		console.log("csvRows[0].split(",").length"+csvRows[0].split(",").length);
+		console.log("columns : "+columns);
+
+
+		for(var i =1; i < csvRows.length; i++){
+		 var rowvals  = csvRows[i].split(",");
+		 rowvals = rowvals.splice(2);
+		 if (max_number < rowvals.max()){
+		   max_number= rowvals.max();
+		 }
+		 if (min_mumber > rowvals.min()){
+		   min_mumber= rowvals.min();
+		 }
+		}
+
+		//console.log("current_array max : "+csvRows.max());
+		//console.log("current_array min : "+csvRows.min());
+		//create the 3d cube				
+		init();
+		animate();
+		}
+
+function init() {
+	container = document.createElement( 'div' );
+	container.setAttribute("id", "cubeDiv");
+	document.body.appendChild( container );
+	//Camera with perspective projection.
+	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+	camera.position.z = 80;
+
+	
+
+	
+	//Controls for the operations to rotate, zoom in and zoom out  
+	controls = new THREE.TrackballControls( camera );
+	controls.rotateSpeed = 2.0;
+	controls.zoomSpeed = 1.2;
+	controls.panSpeed = 0.9;
+	controls.noZoom = false;
+	controls.noPan = false;
+	controls.staticMoving = true;
+	controls.dynamicDampingFactor = 0.3;
+	
+	//Scenes allow you to set up what and where is to be rendered by three.js. This is where you place objects, lights and cameras.
+	scene = new THREE.Scene();
+
+	//This light's color gets applied to all the objects in the scene globally.
+	scene.add( new THREE.AmbientLight( 0x555555 ) );
+
+	//Affects objects using MeshLambertMaterial or MeshPhongMaterial.
+	var light = new THREE.DirectionalLight( 0xffffff, 1 );
+	light.position.set( 0, 0, 1 ).normalize();
+	scene.add( light );
+	
+	//Insert a 3d cube matrix 				
+	//old_createCubeMatrix(72, 72, 1, 1.2);
+	
+	// Add axes
+	var axes3d = buildAxes( 1000 );
+	scene.add( axes3d );
+	
+	//The cube is created based on the number of elements selected on x, y and z axis.
+	createCubeMatrix(xAxisCount, yAxisCount, zAxisCount, deafaultOffset);
+	
+	//The WebGL renderer displays scenes using WebGL, if your device supports it.
+	renderer = new THREE.WebGLRenderer();
+	renderer.setClearColor( 0xf0f0f0 );
+	renderer.setPixelRatio( window.devicePixelRatio );
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.sortObjects = false;
+	container.appendChild(renderer.domElement);
+	document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+//				renderer.domElement.addEventListener( 'mousemove', onMouseMove );
+	window.addEventListener( 'resize', onWindowResize, false );
+}
+
+//Create a 3d cube matrix				
+function createCubeMatrix(m, n, p, offset) {
+	//console.log("m:"+m+" n:"+n+" p:"+p);
+	offset = offset !== undefined ? offset : 2.0;
+	
+	//BoxGeometry is the quadrilateral primitive geometry class.
+	var geom = new THREE.BoxGeometry(1, 1, 1);
+	var color = new THREE.Color();
+
+	var matrix = new THREE.Matrix4();
+	var quaternion = new THREE.Quaternion();
+
+	//Here for screen coordinates, (x=0, y=0) means the center of the screen
+	//The following value is for the top left corner of the cube matrix layer to be plotted
+	var xMin = -offset * ((m-1) / 2.0); 
+	var yMin = offset * ((n-1) / 2.0);
+	var zMin = -offset * ((p-1) / 2.0);
+
+	var csvColumnsInFirstRow;  
+	var csvColumnsInOneRow;
+	var numberOfItems;
+
+	numberOfItems = max_number;
+
+	var rainbow = new Rainbow(); //From rainbowvis.js ;  See  https://github.com/anomal/RainbowVis-JS
+	rainbow.setNumberRange(0, numberOfItems);
+	//The spectrum has a great impact on the outlook of the resulting cube matrix
+	//May extend a function on the user interface  - this will be useful for users to find areas of interst
+	rainbow.setSpectrum('blue', 'cyan', 'turquoise', 'lime', 'green', 'yellowgreen', 'yellow', 'orange', 'orangered', 'red');
+	//rainbow.setSpectrum('blue', 'green', 'yellow', 'orange', 'red');
+
+
+	var hexColorMult = 1;
+	if  (localfilename.includes("NORMALIZE")){
+		createColorLegend(numberOfItems,min_mumber);
+	}
+	else{
+		createColorLegend(numberOfItems,min_mumber,true);
+	}
+
+
+	var hexColor;
+	var mat, box;
+	
+	var boxID = 0;
+	csvColumnsInFirstRow = csvRows[0].split(",");
+	console.log("csvColumnsInFirstRow: "+csvColumnsInFirstRow);
+	//the following codes apply to the specific data structure in the csv file
+	var moveZ=1;
+	for (k = 0, z = zMin; k < p; k ++, z += offset) { //avoid the first row
+		//console.log("z axis loop: "+k);
+		//moveZ = Number(moveZ) + Number(m);
+		//console.log("moveZ:"+Number(moveZ));
+		for (i = 0, y = yMin; i < n; i++, y -= offset) { //1) Begin with the top row, y the same for cubes in the row
+		//console.log("y axis loop: "+i);
+		//console.log("m:"+m);
+		//console.log("i+1+moveZ-m:"+Number((i+1+Number(moveZ)-Number(m))));
+			//csvColumnsInOneRow=csvRows[Number((i+1+Number(moveZ)-Number(m)))].split(",");
+			//console.log("csvRows length: "+csvRows.length);
+			//console.log("first moveZ:"+moveZ);
+			csvColumnsInOneRow=csvRows[moveZ++].split(",");
+			//console.log("second moveZ:"+moveZ);
+			//console.log("csvColumnsInOneRow["+moveZ+"]"+csvColumnsInOneRow);
+			
+			for (j = 0, x = xMin; j < m; j++, x += offset) { //2) Then plot cubes towards right on the x axis, x increases
+				//console.log("x axis loop:"+j);
+				//console.log("csvColumnsInOneRow["+[j+2]+"]:"+csvColumnsInOneRow[j+2]);
+				var cellValue = csvColumnsInOneRow[j+2].replace(/\s/g,"");
+				//var cellValue = csvColumnsInOneRow[j+2];
+				//console.log("csvColumnsInOneRow["+[j+2]+"]:"+cellValue);
+				//console.log("hexColorMult:"+hexColorMult);
+				//if(typeof(cellValue) != 'undefined' && cellValue!= null && cellValue !=" "){
+				if(cellValue=="\"\""){
+					//console.log("null inside if");
+					hexColor = '#' + rainbow.colourAt(null);
+				}else{
+					//console.log("null outside if");
+					hexColor = '#' + rainbow.colourAt(cellValue*hexColorMult); //avoid the first two columns
+				}
+				
+				//A material for non-shiny (Lambertian) surfaces, evaluated per vertex.	//{color: (csvColumnsInOneRow[j]*0xffffff)/100}			
+				mat = new THREE.MeshLambertMaterial({color: hexColor,  transparent: true, opacity: 0.5}); //Assign color to each cube according to the vaule of cells in the csv file, and set trasparent and opacity
+				//var mat = new THREE.MeshNormalMaterial({color: hexColor,  transparent: true, opacity: csvColumnsInOneRow[j+2]/4150});
+				//Mesh object. Mesh( geometry, material ). Geometry defines the object's structure. Material defines the object's appearance.
+				box = new THREE.Mesh(geom, mat);
+				box.position.x = x;
+				box.position.y = y;
+				box.position.z = z;
+				box.is_ob = true;
+				scene.add(box);
+				
+				box.name = boxID;
+				cubeValue[boxID] = [] ; //create a 2-D array 
+				cubeValue[boxID][0] = csvColumnsInOneRow[j+2] ; //value in the cell
+				cubeValue[boxID][1] = csvColumnsInFirstRow[j+2] ; //element on x axis (these three track the element name in x,yand z axis)
+				cubeValue[boxID][2] = csvColumnsInOneRow[1] ; //element on y axis
+				cubeValue[boxID][3] = csvColumnsInOneRow[0] ; //element on z axis
+				//if(isAllEle==1){
+				if ( (boxID == 0) || ((boxID > 0) && (cubeValue[boxID][3] != cubeValue[boxID-1][3])) ) {
+					document.getElementById('elementButtons').innerHTML +=
+					  '<input type="button" value=' + cubeValue[boxID][3] + ' ' +
+					  'onClick="visualizePlane('+ "\'" + cubeValue[boxID][3] + "\'" + ');" />' ;
+				}
+				//}
+				boxID++;	
+			}
+		}
+	}
+}	
+
+
+/*			
+//Create a 3d cube matrix				
+function old_createCubeMatrix(m, n, p, offset) {
+	offset = offset !== undefined ? offset : 2.0;
+	
+	//BoxGeometry is the quadrilateral primitive geometry class.
+	var geom = new THREE.BoxGeometry(1, 1, 1);
+	var color = new THREE.Color();
+
+	var matrix = new THREE.Matrix4();
+	var quaternion = new THREE.Quaternion();
+
+
+	var xMin = -offset * ((m-1) / 2.0);
+	var yMin = -offset * ((n-1) / 2.0);
+	var zMin = -offset * ((p-1) / 2.0);
+	
+	for (i = 0, x = xMin; i < m; i++, x += offset) {
+		for (j = 0, y = yMin; j < n; j++, y += offset) {
+			for (k = 0, z = zMin; k < p; k++, z += offset) {
+				//A material for non-shiny (Lambertian) surfaces, evaluated per vertex.				
+				var mat = new THREE.MeshLambertMaterial({color: Math.random()*0xffffff});
+				//Mesh object. Mesh( geometry, material ). Geometry defines the object's structure. Material defines the object's appearance.
+				var box = new THREE.Mesh(geom, mat);
+				box.position.x = x;
+				box.position.y = y;
+				box.position.z = z;
+				scene.add(box);
+			}	
+		}
+	}
+}			
+*/		
+
+function createColorLegend( maxValue,minValue =0, bceilValue = false) {
+
+	var c = document.getElementById("myCanvas");
+	var ctx = c.getContext("2d");
+
+	ctx.clearRect(0, 0, 50, 500); //clear the whole canvas (including the area of the text)
+
+	var my_gradient = ctx.createLinearGradient(0, 480, 0, 0);
+	my_gradient.addColorStop(0, "blue");
+	my_gradient.addColorStop(1/9, "cyan");
+	my_gradient.addColorStop(2/9, "turquoise");
+	my_gradient.addColorStop(3/9, "lime");
+	my_gradient.addColorStop(4/9, "green");
+	my_gradient.addColorStop(5/9, "yellowgreen");
+	my_gradient.addColorStop(6/9, "yellow");
+	my_gradient.addColorStop(7/9, "orange");
+	my_gradient.addColorStop(8/9, "orangered");
+	my_gradient.addColorStop(1, "red");
+
+	ctx.fillStyle = my_gradient;
+	ctx.fillRect(0, 10, 10, 480);
+	if (bceilValue == true){
+		ctx.strokeText(minValue, 10, 490);//("0", 10, 490);
+		ctx.strokeText(Math.ceil((maxValue/9)).toString(), 10, 490-(480/9));
+		ctx.strokeText(Math.ceil((maxValue*2/9).toString()), 10, 490-(480*2/9));
+		ctx.strokeText(Math.ceil((maxValue*3/9).toString()), 10, 490-(480*3/9));
+		ctx.strokeText(Math.ceil((maxValue*4/9).toString()), 10, 490-(480*4/9));
+		ctx.strokeText(Math.ceil((maxValue*5/9).toString()), 10, 490-(480*5/9));
+		ctx.strokeText(Math.ceil((maxValue*6/9).toString()), 10, 490-(480*6/9));
+		ctx.strokeText(Math.ceil((maxValue*7/9).toString()), 10, 490-(480*7/9));
+		ctx.strokeText(Math.ceil((maxValue*8/9).toString()), 10, 490-(480*8/9));
+		ctx.strokeText(maxValue.toString(), 10, 10);
+
+	}
+	else{
+		ctx.strokeText(minValue, 10, 490);//("0", 10, 490);
+		ctx.strokeText((Math.floor((maxValue/9)*10000)/10000).toString(), 10, 490-(480/9));
+		ctx.strokeText((Math.floor((maxValue*2/9)*10000)/10000).toString(), 10, 490-(480*2/9));
+		ctx.strokeText((Math.floor((maxValue*3/9)*10000)/10000).toString(), 10, 490-(480*3/9));
+		ctx.strokeText((Math.floor((maxValue*4/9)*10000)/10000).toString(), 10, 490-(480*4/9));
+		ctx.strokeText((Math.floor((maxValue*5/9)*10000)/10000).toString(), 10, 490-(480*5/9));
+		ctx.strokeText((Math.floor((maxValue*6/9)*10000)/10000).toString(), 10, 490-(480*6/9));
+		ctx.strokeText((Math.floor((maxValue*7/9)*10000)/10000).toString(), 10, 490-(480*7/9));
+		ctx.strokeText((Math.floor((maxValue*8/9)*10000)/10000).toString(), 10, 490-(480*8/9));
+		ctx.strokeText(maxValue.toString(), 10, 10);
+	}
+}
+
+function visualizePlane (element) {
+
+	var xMin = 0; //xMin is used as handle to see whether the plane is moved out or not. If it is not moved, the minimum x should be negative
+
+	scene.traverse (function (object)
+	{
+		if ( (object instanceof THREE.Mesh) && (cubeValue[object.name][3] == element))
+		{
+			if (object.position.x < xMin) 
+			{ xMin = object.position.x ; }
+		}
+	});
+
+	if (xMin < 0) {	//move the plane out by change x
+	scene.traverse (function (object)
+	{
+		if ( (object instanceof THREE.Mesh) && (cubeValue[object.name][3] == element))
+		{
+				object.translateX(50); 
+		}
+	});
+	camera.position.z = 100;
+	}
+
+	else {	// if the plane is already moved out, then move the plane back
+	scene.traverse (function (object)
+	{
+		if ( (object instanceof THREE.Mesh) && (cubeValue[object.name][3] == element))
+		{
+				object.translateX(-50); 
+		}
+	});
+	camera.position.z = 80;
+	}
+
+	animate();	
+
+}
+//draws x, y and z axes of length minus length to plus length of x,y and z axis respectively
+function buildAxes( length ) {
+	var axes = new THREE.Object3D();
+
+	axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( length, 0, 0 ), 0xFF0000, false ) ); // +X
+	axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( -length, 0, 0 ), 0xFF0000, true) ); // -X
+	axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, length, 0 ), 0x00FF00, false ) ); // +Y
+	axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, -length, 0 ), 0x00FF00, true ) ); // -Y
+	axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, length ), 0x0000FF, false ) ); // +Z
+	axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, -length ), 0x0000FF, true ) ); // -Z
+
+	return axes;
+
+}
+//draws 3 lines for x,y and z axes
+function buildAxis( src, dst, colorHex, dashed ) {
+	var geom = new THREE.Geometry(),
+		mat; 
+
+	if(dashed) {
+		mat = new THREE.LineDashedMaterial({ linewidth: 3, color: colorHex, dashSize: 3, gapSize: 3 });
+	} else {
+		mat = new THREE.LineBasicMaterial({ linewidth: 3, color: colorHex });
+	}
+
+	geom.vertices.push( src.clone() );
+	geom.vertices.push( dst.clone() );
+	geom.computeLineDistances(); // This one is SUPER important, otherwise dashed lines will appear as simple plain lines
+
+	var axis = new THREE.Line( geom, mat, THREE.LinePieces );
+
+	return axis;
+
+}
+
+function removeAllEntities(){
+    var obj, i;
+            for ( i = scene.children.length - 1; i >= 0 ; i -- ) {
+                obj = scene.children[ i ];
+                scene.remove(obj);
+            }
+animate();
+			
+}	
+
+function rebuildAllCubes(){
+	removeAllCubes();
+	clearElementButtons();
+	createCubeMatrix(yAxisCount, xAxisCount, zAxisCount, deafaultOffset);
+	animate();
+}
+	
+function removeAllCubes(){
+    var obj, i;
+            for ( i = scene.children.length - 1; i >= 0 ; i -- ) {
+                obj = scene.children[ i ];
+                if ( obj.is_ob) {
+                    scene.remove(obj);
+                }
+            }		
+}	
+	
+	
+function increaseOpacity(){ // update the oppacity of all cubes
+//var cubeOpacityValue = document.getElementById('opacityValue').value;
+	scene.traverse (function (object)
+	{
+		if (object instanceof THREE.Mesh)
+		{		
+			object.material.opacity += 0.1 ;
+		}
+	});
+
+	animate();
+
+}
+
+function decreaseOpacity(){ // update the oppacity of all cubes
+//var cubeOpacityValue = document.getElementById('opacityValue').value;
+	scene.traverse (function (object)
+	{
+		if (object instanceof THREE.Mesh)
+		{	
+			object.material.opacity -= 0.1 ;
+		}
+	});
+
+	animate();
+
+}
+
+function opacityByMineralCounts(){
+	scene.traverse (function (object)
+	{
+		if (object instanceof THREE.Mesh)
+		{
+			object.material.opacity = cubeValue[object.name][0]/4138 ;
+		}
+	});
+
+	animate();
+
+}
+
+function colorByLogarithmicValues(){
+	var maxLogValue = Math.round( Math.log(4138*2) ); //Because element O has 4138 minerals; //multiply by to to avoid 1 and log vaule of 0
+	var rainbow = new Rainbow(); //From rainbowvis.js ;  See  https://github.com/anomal/RainbowVis-JS
+	rainbow.setNumberRange(0, maxLogValue);
+	rainbow.setSpectrum('blue', 'cyan', 'turquoise', 'lime', 'green', 'yellowgreen', 'yellow', 'orange', 'orangered', 'red');
+	
+	var roundedLogValue = 0;
+	var colorCode = 0;
+
+	scene.traverse (function (object)
+	{
+		if (object instanceof THREE.Mesh)
+		{
+			roundedLogValue = Math.round( Math.log(cubeValue[object.name][0]*2) ); //multiply by to to avoid 1 and log vaule of 0
+			console.log("cubeValue[object.name][0]"+cubeValue[object.name][0]);
+			console.log("roundedLogValue:"+roundedLogValue);
+			if (roundedLogValue < 0) { roundedLogValue=0; }
+			colorCode = '0x' + rainbow.colourAt( roundedLogValue ) ; //cannot   use '#' for '0x'
+			console.log("fn colorByLogarithmicValues() colorCode:"+colorCode);
+			console.log("object.material.color.setHex( colorCode ):"+object.material.color.setHex( colorCode ));
+			object.material.color.setHex( colorCode ); // cannot use   object.material.color = colorCode 
+		
+		}
+	});
+
+	animate();
+
+	createColorLegend(maxLogValue);
+
+}
+	
+function increaseXoffset(){
+	scene.traverse (function (object)
+	{
+		if (object instanceof THREE.Mesh)
+		{
+			object.translateX(object.position.x*0.5); //offset is x*0.5, so new x' = (1+0.5)*x
+		}
+	});
+
+	animate();
+
+}
+
+function decreaseXoffset(){
+	scene.traverse (function (object)
+	{
+		if (object instanceof THREE.Mesh)
+		{
+			object.translateX(-object.position.x/3); //new x' = x/1.5, so offset = -(x'-(x'/1.5)) = -x/3
+		}
+	});
+
+	animate();
+
+}
+
+function increaseYoffset(){
+	scene.traverse (function (object)
+	{
+		if (object instanceof THREE.Mesh)
+		{
+			object.translateY(object.position.y*0.5); 
+		}
+	});
+
+	animate();
+
+}
+
+function decreaseYoffset(){
+	scene.traverse (function (object)
+	{
+		if (object instanceof THREE.Mesh)
+		{
+			object.translateY(-object.position.y/3); 
+		}
+	});
+
+	animate();
+
+}
+
+function increaseZoffset(){
+	scene.traverse (function (object)
+	{
+		if (object instanceof THREE.Mesh)
+		{
+			object.translateZ(object.position.z*0.5);  
+		}
+	});
+
+	animate();
+
+}
+
+function decreaseZoffset(){
+	scene.traverse (function (object)
+	{
+		if (object instanceof THREE.Mesh)
+		{
+			object.translateZ(-object.position.z/3);  
+		}
+	});
+
+	animate();
+
+}
+	
+function onWindowResize() {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+function onDocumentMouseDown( event ) {
+	event.preventDefault();
+	//document.getElementById("numberCubes").focus();
+	document.getElementById("numberCubes").focus();
+	//$("#numberCubes").blur();
+
+}
+
+
+function onDocumentMouseMove( event ) {
+	event.preventDefault();
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;  //1.12 works perfect. It is weird that I cannot use '1' here - there will be an offset in the result - Now I know - it is caused by the div on the top of the window - make the div's position to be absolute solved the issue
+	// find intersections
+
+	raycaster.setFromCamera( mouse, camera );
+
+	var intersects = raycaster.intersectObjects( scene.children );
+	var cellInformation ;
+
+
+	if ( intersects.length > 0 ) {  //there are more than one objects intersected with the mouse
+
+		if ( intersectedObject != intersects[ 0 ].object ) { // the mouse had a big move and now points at a different object(s)
+
+			if ( intersectedObject ) //intersectedObject (i.e. the previous object being pointed at) already exists and is not null
+			{   //restore the color and opacity of the previous object
+				intersectedObject.material.emissive.setHex( objectOriginalHex );
+				intersectedObject.material.opacity = objectOriginalOpacity;
+			}
+			
+			// choose the object closet to mouse as the result
+			intersectedObject = intersects[ 0 ].object;
+			
+			// capture color and opacity of the object for later use --> to restore when mouse move away
+			objectOriginalHex = intersectedObject.material.emissive.getHex();
+			objectOriginalOpacity = intersectedObject.material.opacity;
+			
+			// highlight the object by changing its color and opacity
+			intersectedObject.material.emissive.setHex( 0xff0000 );
+			intersectedObject.material.opacity = 1.0;
+			//if(headerlength ==30 && localfilename.includes("NORMALIZE")){
+			if(localfilename.includes("NORMALIZE")){
+				var mineralLabel = "Mineral fraction value: ";
+			}else{
+				var mineralLabel = "Mineral count value: ";
+			}
+			
+			//show attributes of the object in the window
+			cellInformation = '<font color="red">' + 'X: ' + cubeValue[intersectedObject.name][1] + '</font>' + ", "  //element on x axis	
+				+ '<font color="green">' + 'Y: ' + cubeValue[intersectedObject.name][2] + '</font>' + ", "   //element on y axis
+				+ '<font color="blue">' + 'Z: ' + cubeValue[intersectedObject.name][3] + '</font>' + ", "  //element on z axis
+				+ mineralLabel + cubeValue[intersectedObject.name][0] ; //value in the cell
+				
+			document.getElementById('cellInfo').innerHTML = cellInformation ;
+			
+		} //if (intersectedObject == intersects[ 0 ].object)  -->that means the mouse had a tiny move and still points at the same object, so no change 
+
+	} else { //the mouse moves away and points at no objects
+
+			if ( intersectedObject ) //intersectedObject (i.e. the previous object being poinited at) already exists and is not null
+			{   //restore the color and opacity of the previous object
+				intersectedObject.material.emissive.setHex( objectOriginalHex );
+				intersectedObject.material.opacity = objectOriginalOpacity;
+			}
+
+		intersectedObject = null;  //clean up the intersectedObject variable
+		
+		document.getElementById('cellInfo').setAttribute('value', ' ') ;
+	}
+
+}
+/*
+function onMouseMove( e ) {
+	mouse.x = e.clientX;
+	mouse.y = e.clientY;
+}
+*/			
+function animate() {
+	requestAnimationFrame( animate );
+	render();
+}
+
+function render() {
+	controls.update();
+	renderer.render( scene, camera );
+}
+function clearElementButtons() {
+	var elem = document.getElementById('elementButtons');
+	var fc = elem.firstChild;
+	while( fc ){
+		elem.removeChild(fc);
+		fc = elem.firstChild;
+	}
+	//elem.parentNode.removeChild(elem);
+}
+
+
+/* as the text input is not clickable due to canvas overlapping, set focus () function is used to forcefully to change the value, but it can't be triggered by this function so button is used.
+$("#numberCubes").change(function(){
+    alert("Hello");
+});
+*/
+$("#removeCubesLessThan").click(function(){
+//alert("cubes with value less then "+ $("#numberCubes").val()+ " will be removed");
+//console.log("scene.children.length : "+ scene.children.length);
+//console.log("obj" + obj);
+    var obj, i;
+	//var max = Math.max(scene.children.name[0]);
+	for ( i = scene.children.length - 1; i >= 0 ; i -- ) {
+	//console.log("i: "+i);
+		obj = scene.children[i];
+		//console.log("scene.children.name[0]" + cubeValue[scene.children[i].name][0]);
+		if ( obj.is_ob) {
+			if(Number(cubeValue[obj.name][0]) < Number($("#numberCubes").val())){
+				//console.log("cube value: " + cubeValue[obj.name][0] + "lesthan value : "+$("#numberCubes").val());
+				scene.remove(obj);
+			}
+		}
+	}
+
+});
+
+$("#numberCubes").on("keypress keyup blur",function (event) {
+            //this.value = this.value.replace(/[^0-9\.]/g,'');
+     $(this).val($(this).val().replace(/[^0-9\.]/g,''));
+	 if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+		event.preventDefault();
+	 }
+});
+
+			
+</script>
+	
+</body></html>
