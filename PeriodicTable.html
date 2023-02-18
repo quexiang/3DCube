@@ -55,10 +55,10 @@
 				 <option value = "5">30_sigelements</option>
 				 <option value = "6">normalized_30_elements</option>
 				 <option value = "7">normalized_30_sigelements</option>
-				 <option value = "8">72_elements</option>
-				 <option value = "9">72_sigelements</option>
-				 <option value = "10">normalized_72_elements</option>
-				 <option value = "11">normalized_72_sigelements</option>
+				 <option value = "8">73_elements</option>
+				 <option value = "9">73_sigelements</option>
+				 <option value = "10">normalized_73_elements</option>
+				 <option value = "11">normalized_73_sigelements</option>
 			</select>
 		</label>
 
@@ -1431,7 +1431,7 @@
 					table.find(".present").removeClass("present");
 					table.find(".notpresent").removeClass("notpresent");
 					//var	file = "./30\-elements-normalized\ \-\ no_blank_lines.csv";
-					var	file = "../static/js/3DCube/72_elements.csv";
+					var	file = "../static/js/3DCube/73_elements.csv";
 
 					console.log("filename:"+file);
 					var config = {
@@ -1444,7 +1444,7 @@
 					$.get(file,function(results){
 						csvdata = Papa.parse(results,config);
 						temp = results;
-						filename = "../static/js/3DCube/72\-ELEMENTS.CSV";
+						filename = "../static/js/3DCube/73\-ELEMENTS.CSV";
 						console.log("data inside load:"+csvdata.data.length);
 						console.log("data inside load:"+csvdata.data[0]);
 						//console.log("data inside load:"+results);
@@ -1468,7 +1468,7 @@
 					length = 0;
 					table.find(".present").removeClass("present");
 					table.find(".notpresent").removeClass("notpresent");
-					var	file = "../static/js/3DCube/72_sigelements.csv";
+					var	file = "../static/js/3DCube/73_sigelements.csv";
 					console.log("filename:"+file);
 					var config = {
 							header:true,
@@ -1480,7 +1480,7 @@
 					$.get(file,function(results){
 						csvdata = Papa.parse(results,config);
 						temp = results;
-						filename = "../static/js/3DCube/72\-ELEMENTS-SIGELEMENTS.CSV";
+						filename = "../static/js/3DCube/73\-ELEMENTS-SIGELEMENTS.CSV";
 						console.log("data inside load:"+csvdata.data.length);
 						console.log("data inside load:"+csvdata.data[0]);
 						//console.log("data inside load:"+results);
@@ -1504,7 +1504,7 @@
 					length = 0;
 					table.find(".present").removeClass("present");
 					table.find(".notpresent").removeClass("notpresent");
-					var	file = "../static/js/3DCube/normalized_72_elements.csv";
+					var	file = "../static/js/3DCube/normalized_73_elements.csv";
 
 					console.log("filename:"+file);
 					var config = {
@@ -1517,7 +1517,7 @@
 					$.get(file,function(results){
 						csvdata = Papa.parse(results,config);
 						temp = results;
-						filename = "../static/js/3DCube/72\-ELEMENTS-NORMALIZED\.CSV";
+						filename = "../static/js/3DCube/73\-ELEMENTS-NORMALIZED\.CSV";
 						console.log("data inside load:"+csvdata.data.length);
 						console.log("data inside load:"+csvdata.data[0]);
 						//console.log("data inside load:"+results);
@@ -1540,7 +1540,7 @@
 					length = 0;
 					table.find(".present").removeClass("present");
 					table.find(".notpresent").removeClass("notpresent");
-					var	file = "../static/js/3DCube/normalized_72_sigelements.csv";
+					var	file = "../static/js/3DCube/normalized_73_sigelements.csv";
 
 					console.log("filename:"+file);
 					var config = {
@@ -1553,7 +1553,7 @@
 					$.get(file,function(results){
 						csvdata = Papa.parse(results,config);
 						temp = results;
-						filename = "../static/js/3DCube/72\-ELEMENTS-NORMALIZED\ \-\ SIGEL.CSV";
+						filename = "../static/js/3DCube/73\-ELEMENTS-NORMALIZED\ \-\ SIGEL.CSV";
 						console.log("data inside load:"+csvdata.data.length);
 						console.log("data inside load:"+csvdata.data[0]);
 						//console.log("data inside load:"+results);
