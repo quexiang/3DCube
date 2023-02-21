@@ -411,7 +411,8 @@ function visualizePlane (element) {
 	{
 		if ( (object instanceof THREE.Mesh) && (cubeValue[object.name][3] == element))
 		{
-				object.translateX(50); 
+				//object.translateX(50); 
+				object.translateX(100); 
 		}
 	});
 	camera.position.z = 100;
@@ -422,10 +423,12 @@ function visualizePlane (element) {
 	{
 		if ( (object instanceof THREE.Mesh) && (cubeValue[object.name][3] == element))
 		{
-				object.translateX(-50); 
+				//object.translateX(-50); 
+				object.translateX(-100); 
 		}
 	});
-	camera.position.z = 80;
+	//camera.position.z = 80;
+	camera.position.z = 160;
 	}
 
 	animate();	
