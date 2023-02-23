@@ -10,7 +10,7 @@ By 02/23/203, there are eight datasets on the demo system:
 All datasets are derived from the Mindat.org database. 
 
 The general workflow is as below:
-1) Go to https://goo.gl/UNbdok. A user can load one of the three datasets by click a button. Once the dataset is loaded, the corresponding elements in the dataset will be highlighted in the periodic table.
+1) Go to http://tickmap.nkn.uidaho.edu/D3Cube. A user can load one of the three datasets by click a button. Once the dataset is loaded, the corresponding elements in the dataset will be highlighted in the periodic table.
 2) The user can select elements to be listed along each axis in the output cube matrix, First click the input box for an axis then make selections by clicking nodes in the periodic table. The selected elements will show up in the input box of that axis. The option is same for the input box of all the three axes.
 3) When the data selection is done, the user can download the selected dataset (csv format) or visualize it in a cube matrix by clicking the corresponding buttons. The visualization function will
     
