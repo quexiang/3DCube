@@ -41,7 +41,7 @@ Users can either render the 3D heat map with selected elements in three axes or 
 In the rendered page of the 3D heat map, several ways exist to interact with the cubes and gain insight from the dataset. The available operations include but are not limited to filtering cubes by their values, adjusting the opacity for the cubes, coloring by logarithmic values, slicing sample sections from the entire cubes, etc.
 
 ## Datasets
-For the data cleansing workflow, please refer to the [GitHub Repository](https://github.com/ChuBL/3DHeatmapDataPreprosses).
+For the data cleansing workflow, please refer to this [GitHub Repository](https://github.com/ChuBL/3DHeatmapDataPreprosses).
 By 02/23/2023, there are eight datasets on the demo system:
 
 #### Subset 30 Common Elements Datasets
